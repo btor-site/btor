@@ -1,0 +1,49 @@
+.container {
+    text-align: center;
+    border-radius: 20px;
+    padding: 10px !important;
+    top: 75px;
+    background-image: linear-gradient(to bottom, #d8d8d8, #f2f2f2);
+    width: 45% !important;
+    box-shadow: -1px 10px 36px -19px rgba(0,0,0,0.75);
+}
+
+label {
+    text-align: left;
+}
+
+input, textarea {
+    width: 100%;
+    background-color: #e2e2e2 !important;
+    border: 0.5px solid gray !important;
+}
+
+input[type=submit] {
+    color: #000 !important;
+}
+
+body {
+    opacity: 0.95;
+    background-image: url("https://i.imgur.com/xe6NCZH.png");
+    background-size: cover;
+}
+
+.link {
+    text-decoration: none;
+    font-weight: 650;
+    color: #8B52FE;
+}
+
+.link:hover {
+    color: #6214ff
+}
+
+.title {
+    font-weight: 670;
+    margin-top: 30px;
+}
+
+textarea {
+    height: 150px !important;
+    resize: none;
+}

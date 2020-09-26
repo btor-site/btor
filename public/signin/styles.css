@@ -1,0 +1,68 @@
+.container {
+    text-align: center;
+    padding: 10px !important;
+    top: 100px;
+    width: 25% !important;
+    box-shadow: -1px 10px 50px 13px rgba(0,0,0,1);
+    margin: auto 15% auto auto !important;
+    color: white;
+    background-color: rgba(255, 255, 255, 0);
+    /* background-image: linear-gradient(to bottom, #d8d8d8, #f2f2f2); */
+    /* border-radius: 20px; */
+}
+
+label {
+    text-align: left;
+}
+
+input {
+    width: 90%;
+    border: 0.5px solid gray !important;
+    background-color: rgba(0,0,0,0) !important;
+    border: none !important;
+    color: white;
+    border-bottom: 1px solid white !important;
+    border-radius: 0 !important;
+}
+
+input:focus {
+    border-bottom: 1px solid #8B52FE !important;
+}
+
+input[type=submit] {
+    background-color: #8B52FE !important;
+    color: white !important;
+    border: none !important;
+}
+
+input[type=submit]:hover {
+    background-color: #6214ff !important;
+}
+
+body {
+    background-image: url("https://i.imgur.com/tEhPtM8.png");
+    background-size: cover;
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.link {
+    text-decoration: none;
+    font-weight: 650;
+    color: #8B52FE;
+}
+
+.link:hover {
+    color: #6214ff
+}
+
+.title {
+    font-weight: 550;
+    margin-top: 30px;
+    line-height: 10px;
+    font-size: 30px;
+}
+
+.logo {
+    margin: 10px 0 0;
+    line-height: 10px;
+}

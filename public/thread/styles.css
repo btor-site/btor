@@ -1,0 +1,80 @@
+.navbar {
+    text-align: right;
+}
+
+.userBtn {
+    background-color: #8B52FE;
+    color: white;
+    border: none;
+    margin: 5px;
+}
+
+.userBtn:hover {
+    background-color: #6214ff;
+    color: white;
+}
+
+.threadBtn:hover {
+    background-color: #6214ff;
+    color: white;
+}
+
+.threadBtn {
+    background-color: #8B52FE;
+    color: white;
+    border: none;
+    margin: 5px;
+}
+
+.logo {
+    text-align: left;
+    position: absolute;
+    text-decoration: none;
+    color: #000;
+}
+
+hr {
+    margin: 0px !important;
+}
+
+.comment {
+    background-color: #f2f2f2;
+    box-shadow: 1px 10px 5px -10px rgba(0,0,0,0.9);
+    padding: 20px;
+    border-radius: 20px;
+    padding-bottom: 10px;
+    margin: 10px auto;
+    width: 35%;
+}
+
+.author {
+    font-size: 23px;
+}
+
+.comment-id {
+    margin: 30px 0px 0px;
+    font-size: 10px;
+}
+
+input[type=submit] {
+    background-color: #8B52FE !important;
+    color: white !important;
+}
+
+.formContainer {
+    width: 35%;
+    margin: 10px auto;
+    text-align: center;
+}
+
+label {
+    text-align: left !important;
+}
+
+textarea {
+    width: 100%;
+}
+
+.title {
+    text-align: center;
+}
