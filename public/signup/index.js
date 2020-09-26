@@ -20,11 +20,14 @@ form.addEventListener('submit', (event) => {
     })
         .then(response => response.json())
         .then(result => {
-            console.log(result)
-            form.reset()
-            sessionStorage.setItem('user_id', result.id)
-            sessionStorage.setItem('token', result.token)
-            window.location.href = '/'
+            if(result.token) {
+                form.reset()
+                sessionStorage.setItem('user_id', result.id)
+                sessionStorage.setItem('token', result.token)
+                window.location.href = '/'
+            } else {
+                alert(result.message)
+            }
         })
 })
 

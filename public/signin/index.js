@@ -10,9 +10,8 @@ form.addEventListener('submit', (event) => {
         username,
         password
     }
-    console.log(body)
 
-    fetch('/api/users/login', {
+    fetch('/api/users/signin', {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
@@ -21,10 +20,15 @@ form.addEventListener('submit', (event) => {
     })
         .then(response => response.json())
         .then(result => {
-            form.reset()
-            sessionStorage.setItem('user_id', result.id)
-            sessionStorage.setItem('token', result.token)
-            window.location.href = '/'
+            if(result.token) {
+                form.reset()
+                sessionStorage.setItem('user_id', result.id)
+                sessionStorage.setItem('token', result.token)
+                window.location.href = '/'
+            } else {
+                alert(result.message)
+                document.querySelector("#password").value = ''
+            }
         })
 })
 

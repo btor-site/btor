@@ -47,7 +47,7 @@ const commentLimiter = rateLimit({
     }
 })
 
-const loginLimiter = rateLimit({
+const signinLimiter = rateLimit({
     windowMs: 30 * 60 * 1000,
     max: 3,
     message: {
@@ -63,7 +63,7 @@ app.use(express.static('public'))
 // app.use('/api/users/new', userLimiter)
 // app.use('/api/threads/new', threadLimiter)
 // app.use('/api/threads/:code/comments/new', commentLimiter)
-// app.use('/api/users/login', loginLimiter)
+// app.use('/api/users/signin', signinLimiter)
 
 
 // Pages
@@ -132,12 +132,12 @@ app.post('/api/users/new', (req, res) => {
     })
 })
 
-app.post('/api/users/login', (req, res) => {
+app.post('/api/users/signin', (req, res) => {
     if (!req.body.username || !req.body.password) return res.status(400).json({
-        message: req.body.username ? req.body.password ? errorCode(req.body, '/api/users/login ', req.headers) : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
+        message: req.body.username ? req.body.password ? errorCode(req.body, '/api/users/signin ', req.headers) : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
     })
     if (!userDB.prepare('SELECT * FROM users WHERE username=(?)').get(req.body.username)) return res.status(404).json({
-        message: 'No user was found'
+        message: 'Incorrect Username or Password'
     })
 
     const user = userDB.prepare('SELECT * FROM users WHERE username=(?)').get(req.body.username)

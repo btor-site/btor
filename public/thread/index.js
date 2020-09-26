@@ -43,7 +43,6 @@ form.addEventListener('submit', (event) => {
     const body = {
         message
     }
-    console.log(body)
 
     fetch(`/api/threads/${window.location.pathname.split('/')[2]}/comments/new`, {
             method: 'POST',
@@ -56,7 +55,6 @@ form.addEventListener('submit', (event) => {
         .then(response => response.json())
         .then(result => {
             form.reset()
-            console.log(result)
             loadComments()
         })
 })
