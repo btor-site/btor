@@ -55,3 +55,42 @@ hr {
 .title:hover {
     color: #6214ff
 }
+
+.alert {
+    background-color: rgba(0, 0, 0, 0.8);
+    position: sticky;
+    bottom: 0;
+    color: white;
+    padding: 20px;
+    width: 90%;
+    margin: auto;
+    text-align: center;
+    height: 70px;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    background-color: white;
+}
+
+.alertText {
+    display: inline;
+}
+
+.alertImg {
+    position: absolute;
+    bottom: 30px;
+    left: 20%;
+}
+
+.alertBtn {
+    margin: 5px;
+}
+
+.alertBtn > button {
+    background-color: #8B52FE;
+    border: none !important;
+    color: white !important;
+    margin-top: 10px;
+}

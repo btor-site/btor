@@ -1,6 +1,7 @@
 const userField = document.getElementById('user')
 const signinLink = document.getElementById('signinLink')
 const threadsField = document.getElementById('threads')
+const loginAlert = document.getElementById('loginAlert')
 
 if(sessionStorage.getItem('token')) {
     fetch('/api/users/me', {
@@ -11,10 +12,16 @@ if(sessionStorage.getItem('token')) {
     })
         .then(response => response.json())
         .then(result => {
-            if(!result.username) return sessionStorage.removeItem('token')
-            userField.innerText = result.username
-            signinLink.href = '#'
+            if(!result.username) {
+                sessionStorage.removeItem('token')
+                loginAlert.hidden = false
+            } else {
+                userField.innerText = result.username
+                signinLink.href = '#'
+            }
         })
+} else {
+    loginAlert.hidden = false
 }
 
 fetch('/api/threads/all')

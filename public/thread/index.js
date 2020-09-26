@@ -2,6 +2,7 @@ const userField = document.getElementById('user')
 const commentsField = document.getElementById('comments')
 const title = document.getElementById('title')
 const form = document.getElementById('commentForm')
+const loginAlert = document.getElementById('loginAlert')
 let comments
 
 if (sessionStorage.getItem('token')) {
@@ -16,12 +17,14 @@ if (sessionStorage.getItem('token')) {
             if(!result.username) {
                 sessionStorage.removeItem('token')
                 form.outerHTML = ''
+                loginAlert.hidden = false
             } else {
                 userField.innerText = result.username
             }
         })
 } else {
     form.outerHTML = ''
+    loginAlert.hidden = false
 }
 
 function loadComments() {
