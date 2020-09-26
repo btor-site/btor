@@ -56,7 +56,7 @@ const loginLimiter = rateLimit({
 })
 
 const app = express()
-app.listen(7686)
+app.listen(process.env.PORT)
 app.use(express.json())
 app.use(express.static('public'))
 
