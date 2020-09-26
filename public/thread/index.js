@@ -13,9 +13,15 @@ if (sessionStorage.getItem('token')) {
         })
         .then(response => response.json())
         .then(result => {
-            if (!result.username) return sessionStorage.removeItem('token')
-            userField.innerText = result.username
+            if(!result.username) {
+                sessionStorage.removeItem('token')
+                form.outerHTML = ''
+            } else {
+                userField.innerText = result.username
+            }
         })
+} else {
+    form.outerHTML = ''
 }
 
 function loadComments() {

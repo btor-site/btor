@@ -7,8 +7,6 @@
     margin: auto 15% auto auto !important;
     color: white;
     background-color: rgba(255, 255, 255, 0);
-    /* background-image: linear-gradient(to bottom, #d8d8d8, #f2f2f2); */
-    /* border-radius: 20px; */
 }
 
 label {
@@ -33,6 +31,9 @@ input[type=submit] {
     background-color: #8B52FE !important;
     color: white !important;
     border: none !important;
+    width: 100px;
+    border-radius: 20   px !important;
+    padding: 0 !important;
 }
 
 input[type=submit]:hover {

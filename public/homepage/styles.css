@@ -39,11 +39,10 @@ hr {
 
 .thread {
     background-color: #f2f2f2;
-    box-shadow: 1px 10px 5px -10px rgba(0,0,0,0.9);
-    padding: 20px;
-    border-radius: 20px;
-    padding-bottom: 10px;
-    margin: 10px auto;
+    box-shadow: 1px 10px 15px -10px rgba(0,0,0,0.9);
+    padding: 10px;
+    border-radius: 10px;
+    margin: 20px auto;
     width: 35%;
 }
 
