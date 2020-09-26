@@ -103,3 +103,7 @@ dist
 # TernJS port file
 .tern-port
 
+# Other
+errors.db
+threads.db
+users.db
