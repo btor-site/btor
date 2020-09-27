@@ -88,6 +88,10 @@ app.get('/threads/:code', (req, res) => {
     res.sendFile(__dirname + '/public/thread/index.html')
 })
 
+app.get('/support', (req, res) => {
+    res.sendFile(__dirname + '/public/support/index.html')
+})
+
 app.get('/scripts/:page/index.js', (req, res) => {
     res.sendFile(__dirname + `/public/${req.params.page}/index.js`)
 })
@@ -230,6 +234,13 @@ app.get('/api/threads/:code/comments', (req, res) => {
         comments: threadDB.prepare('SELECT author,comment,comment_id FROM thread_comments WHERE ID=(?)').all(req.params.code)
     }
     res.json(body)
+})
+
+app.post('/api/threads/search', (req, res) => {
+    if (!req.body.query) return res.status(400).json({
+        message: 'You need to include the search query'
+    })
+    res.json(threadDB.prepare('SELECT * FROM thread_overview WHERE ID IS NOT NULL').all().reverse().filter(thread => thread.title.includes(req.body.query)))
 })
 
 app.delete('/api/all', (req, res) => {

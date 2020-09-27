@@ -1,29 +1,22 @@
 .navbar {
-    text-align: right;
+    text-align: center;
+    height: 65px;
 }
 
-.userBtn {
-    background-color: #8B52FE;
-    color: white;
+.navBtn {
+    color: #8B52FE;
     border: none;
     margin: 5px;
+    height: 40px;
+    border-radius: 0 !important;
+    font-size: 13px;
+    margin-top: 10px;
 }
 
-.userBtn:hover {
-    background-color: #6214ff;
-    color: white;
-}
-
-.threadBtn:hover {
-    background-color: #6214ff;
-    color: white;
-}
-
-.threadBtn {
-    background-color: #8B52FE;
-    color: white;
-    border: none;
-    margin: 5px;
+.navBtn:hover {
+    background-color: #F5F5F5;
+    border-bottom: 2px solid #6214ff;
+    color: #8B52FE;
 }
 
 .logo {
@@ -83,41 +76,8 @@ textarea {
     text-align: center;
 }
 
-.alert {
-    background-color: rgba(0, 0, 0, 0.8);
-    position: sticky;
-    bottom: 0;
-    color: white;
-    padding: 20px;
-    width: 90%;
-    margin: auto;
-    text-align: center;
-    height: 70px;
-}
-
 .topbar {
     position: sticky;
     top: 0;
     background-color: white;
-}
-
-.alertText {
-    display: inline;
-}
-
-.alertImg {
-    position: absolute;
-    bottom: 30px;
-    left: 20%;
-}
-
-.alertBtn {
-    margin: 5px;
-}
-
-.alertBtn > button {
-    background-color: #8B52FE;
-    border: none !important;
-    color: white !important;
-    margin-top: 10px;
 }
