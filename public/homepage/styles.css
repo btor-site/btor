@@ -58,3 +58,32 @@ hr {
 .banner {
     width: 100%;
 }
+
+.searchBar {
+    position: absolute;
+    right: 25px;
+    text-decoration: none;
+    color: #000;
+    margin-top: 10px;
+    border: none !important;
+    border-bottom: 2px solid rgb(180, 180, 180) !important;
+    border-radius: 0 !important;
+    width: 250px;
+}
+
+.searchBar:focus {
+    border-bottom: 2px solid #8B52FE !important;
+    background-color: #F5F5F5;
+}
+
+.searchBar::placeholder {
+    text-align: center;
+}
+
+.searchBar:focus::placeholder {
+    color: rgba(0, 0, 0, 0);
+}
+
+.searchBar:hover {
+    background-color: #F5F5F5;
+}

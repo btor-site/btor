@@ -240,10 +240,13 @@ app.post('/api/threads/search', (req, res) => {
     if (!req.body.query) return res.status(400).json({
         message: 'You need to include the search query'
     })
-    res.json(threadDB.prepare('SELECT * FROM thread_overview WHERE ID IS NOT NULL').all().reverse().filter(thread => thread.title.includes(req.body.query)))
+    res.json(threadDB.prepare('SELECT * FROM thread_overview WHERE ID IS NOT NULL').all().reverse().filter(thread => thread.title.toLowerCase().includes(req.body.query.toLowerCase())))
 })
 
 app.delete('/api/all', (req, res) => {
+    if(req.headers.authorization !== process.env.ADMIN_PASSWORD) return res.status(401).json({
+        message: 'Admin password not correct'
+    })
     userDB.prepare('DELETE FROM users').run()
     threadDB.prepare('DELETE FROM thread_comments').run()
     threadDB.prepare('DELETE FROM thread_overview').run()
