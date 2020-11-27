@@ -1,12 +1,39 @@
 .container {
     text-align: center;
     padding: 10px !important;
-    top: 160px;
-    width: 25% !important;
-    box-shadow: -1px 10px 50px 13px rgba(0,0,0,1);
-    margin: auto 15% auto auto !important;
+    box-shadow: -1px 10px 50px 13px rgba(0, 0, 0, 1);
     color: white;
     background-color: rgba(255, 255, 255, 0);
+    height: 450px;
+}
+
+@media (min-width: 750px) {
+    .container {
+        width: 25% !important;
+        position: absolute !important;
+        top: 50%;
+        margin-top: -225px !important;
+        right: 15%;
+    }
+
+    .btor_text {
+        height: 50px;
+        position: absolute !important;
+        top: 40%;
+        left: 200px;
+    }
+}
+
+@media (max-width: 750px) {
+    .container {
+        margin: auto;
+    }
+
+    .btor_text {
+        text-align: center;
+        /* visibility: hidden;
+        display: none; */
+    }
 }
 
 label {
@@ -15,7 +42,7 @@ label {
 
 input {
     width: 90%;
-    background-color: rgba(0,0,0,0) !important;
+    background-color: rgba(0, 0, 0, 0) !important;
     border: none !important;
     color: white;
     border-bottom: 1px solid white !important;
@@ -24,6 +51,10 @@ input {
 
 input:focus {
     border-bottom: 1px solid #8B52FE !important;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 input[type=submit] {
@@ -40,9 +71,15 @@ input[type=submit]:hover {
 }
 
 body {
-    background-image: url("https://i.imgur.com/tEhPtM8.png");
+    background-image: linear-gradient(rgba(140, 82, 255, 0.18), rgba(140, 82, 255, 0.18)), url("/images/background.png");
+    background-position: center;
+    background-repeat: no-repeat;
     background-size: cover;
     font-family: Arial, Helvetica, sans-serif !important;
+}
+
+html {
+    height: 100%;
 }
 
 .link {
@@ -65,4 +102,25 @@ body {
 .logo {
     margin: 10px 0 0;
     line-height: 10px;
+}
+
+.btor_text>img,
+.btor_text>p {
+    display: inline-block;
+    font-size: 50px;
+    font-weight: 1000;
+    color: white;
+}
+
+.purple {
+    color: rgba(140, 82, 255);
+}
+
+.btor_text {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

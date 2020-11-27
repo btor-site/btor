@@ -1,0 +1,79 @@
+.title {
+    text-align: center;
+}
+
+.adminPwd {
+    width: 100%;
+    background-color: rgba(0,0,0,0) !important;
+    border: none !important;
+    border-bottom: 2px solid rgb(180, 180, 180) !important;
+    border-radius: 0 !important;
+}
+
+.adminPwd:focus {
+    border-bottom: 1px solid #8B52FE !important;
+}
+
+.pwdWrapper {
+    margin: auto;
+    text-align: center;
+}
+
+.btnWrapper {
+    margin: auto;
+    text-align: center;
+}
+
+.adminPwd::placeholder {
+    text-align: center;
+}
+
+.adminPwd:focus::placeholder {
+    color: rgba(0, 0, 0, 0);
+}
+
+.adminPwd:hover {
+    background-color: #F5F5F5;
+}
+
+.columns {
+    text-align: center;
+}
+
+input[type=submit] {
+    background-color: #8B52FE !important;
+    color: white !important;
+    border: none !important;
+    width: 100px;
+    border-radius: 20px !important;
+    padding: 0 !important;
+}
+
+input[type=submit]:hover {
+    background-color: #6214ff !important;
+}
+
+.control-title {
+    font-size: 20px;
+}
+
+table, th, td {
+    margin-top: 10px;
+    padding: 5px;
+}
+
+table {
+    margin: auto;
+}
+
+@media (min-width: 650px) {
+    .pwdWrapper {
+        width: 20%;
+    }
+}
+
+@media (max-width: 650px) {
+    .pwdWrapper {
+        width: 50%;
+    }
+}

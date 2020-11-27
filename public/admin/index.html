@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTOR - Admin</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="/styles/admin/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+</head>
+
+<body>
+    <h1 class="title">Admin panel</h1>
+    <div class="pwdWrapper">
+        <input type="password" id="password" class="adminPwd" placeholder="Admin Password">
+    </div>
+    <br>
+    <div class="btnWrapper">
+        <button onclick="show('.page1')">Controls</button>
+        <button onclick="show('.page2')">All users</button>
+        <button onclick="show('.page3')">SQL SELECT query</button>
+        <button onclick="show('.page4')">SQL query</button>
+    </div>
+    <br>
+    <div class="page1">
+        <div class="row">
+            <div class="three columns">
+                <div class="formContainer">
+                    <form class="editForm">
+                        <h5 class="control-title">Edit a user, thread or comment</h5>
+                        <input type="text" name="id" placeholder="ID" required>
+                        <br>
+                        <input type="text" name="newContent" placeholder="New content" required>
+                        <br>
+                        <select required name="type">
+                            <option value="" disabled selected>Select the type</option>
+                            <option value="user">User</option>
+                            <option value="thread">Thread</option>
+                            <option value="comment">Comment</option>
+                        </select>
+                        <br>
+                        <input type="submit" value="Edit">
+                    </form>
+                </div>
+            </div>
+            <div class="three columns">
+                <div class="formContainer">
+                    <form class="deleteForm">
+                        <h5 class="control-title">Delete a user, thread or comment</h5>
+                        <input type="text" name="id" placeholder="ID" required>
+                        <br>
+                        <select required name="type">
+                            <option value="" disabled selected>Select the type</option>
+                            <option value="user">User</option>
+                            <option value="thread">Thread</option>
+                            <option value="comment">Comment</option>
+                        </select>
+                        <br>
+                        <input type="submit" value="Delete">
+                    </form>
+                </div>
+            </div>
+            <div class="three columns">
+                <div class="formContainer">
+                    <form class="userIdForm">
+                        <h5 class="control-title">Get user id from username</h5>
+                        <input type="text" name="name" placeholder="Username" required>
+                        <br>
+                        <input type="submit" value="Get ID">
+                    </form>
+                    <div id="copyId" hidden>
+                        <input type="text" id="userID" readonly>
+                        <br>
+                        <button class="userIDbtn" data-clipboard-target="#userID">Copy to clipboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page2" hidden>
+        <table class="userTable"></table>
+    </div>
+    <div class="page3" hidden>
+        <h1>Coming soon</h1>
+    </div>
+    <div class="page4" hidden>
+        <h1>Coming soon</h1>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmlson.js@1.0.7/src/htmlson.min.js"></script>
+    <script src="/scripts/admin/index.js"></script>
+</body>
+
+</html>

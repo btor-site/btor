@@ -107,3 +107,5 @@ dist
 errors.db
 threads.db
 users.db
+admin.db
+requests.http

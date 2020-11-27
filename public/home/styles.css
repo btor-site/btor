@@ -1,0 +1,116 @@
+.navbar {
+    text-align: right !important;
+    height: 65px;
+}
+
+.navBtn {
+    color: white;
+    border: none;
+    margin: 5px;
+    height: 40px;
+    border-radius: 0 !important;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.navBtn:hover {
+    background-color: #25252531;
+    border-bottom: 2px solid #6214ff;
+    color: #8B52FE;
+}
+
+.logo {
+    text-align: left;
+    position: absolute;
+    text-decoration: none;
+    color: #000;
+}
+
+hr {
+    margin: 0px !important;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+}
+
+body {
+    background-image: url("https://i.imgur.com/fDO7IK2.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+html {
+    height: 100%;
+}
+
+.title {
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+    font-weight: 650;
+    color: #8B52FE !important;
+}
+
+a:hover {
+    color: #6214ff !important;
+}
+
+.dropbtn {
+    background-color: #25252531;
+    padding: 0px;
+    width: 40px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content {
+    right: 0;
+    text-align: center;
+}
+
+@media (min-width: 550px) {
+    .dropdown {
+        visibility: hidden;
+        display: none;
+    }
+}
+
+@media (max-width: 550px) {
+    .navBtns {
+        visibility: hidden;
+        display: none;
+    }
+}
+
+.drop {
+    color: #8B52FE;
+}

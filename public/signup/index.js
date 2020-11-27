@@ -20,27 +20,11 @@ form.addEventListener('submit', (event) => {
     })
         .then(response => response.json())
         .then(result => {
-            if(result.token) {
+            if(result.success) {
                 form.reset()
-                sessionStorage.setItem('user_id', result.id)
-                sessionStorage.setItem('token', result.token)
                 window.location.href = '/'
             } else {
                 alert(result.message)
             }
         })
 })
-
-if(sessionStorage.getItem('token')) {
-    fetch('/api/users/me', {
-        method: 'GET',
-        headers: {
-            'Authorization': sessionStorage.getItem('token')
-        }
-    })
-        .then(response => response.json())
-        .then(result => {
-            if(!result.username) return sessionStorage.removeItem('token')
-            window.location.href = '/'
-        })
-}

@@ -2,29 +2,50 @@
     text-align: center;
     border-radius: 20px;
     padding: 10px !important;
+    color: white;
     top: 75px;
-    background-image: linear-gradient(to bottom, #d8d8d8, #f2f2f2);
+    background-color: rgba(255, 255, 255, 0);
     width: 45% !important;
-    box-shadow: -1px 10px 36px -19px rgba(0,0,0,0.75);
+    box-shadow: -1px 10px 50px 13px rgba(0,0,0,1);
 }
 
-label {
-    text-align: left;
+input[type=text] {
+    width: 90%;
+    border: none !important;
+    color: white;
+    border-bottom: 1px solid white !important;
+    background-color: rgba(100, 100, 100, 0.288) !important;
+    border-radius: 5px;
 }
 
-input, textarea {
-    width: 100%;
-    background-color: #e2e2e2 !important;
-    border: 0.5px solid gray !important;
+textarea {
+    width: 90%;
+    border: none !important;
+    color: white;
+    background-color: rgba(100, 100, 100, 0.288) !important;
+    border-radius: 5px;
+}
+
+input:focus {
+    border-bottom: 1px solid #8B52FE !important;
 }
 
 input[type=submit] {
-    color: #000 !important;
+    background-color: #8B52FE !important;
+    color: white !important;
+    border: none !important;
+    width: 100px;
+    border-radius: 20px !important;
+    padding: 0 !important;
+}
+
+input[type=submit]:hover {
+    background-color: #6214ff !important;
 }
 
 body {
     opacity: 0.95;
-    background-image: url("https://i.imgur.com/xe6NCZH.png");
+    background-image: url("/images/background.png");
     background-size: cover;
 }
 
@@ -46,4 +67,8 @@ body {
 textarea {
     height: 150px !important;
     resize: none;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #afafaf;
 }
