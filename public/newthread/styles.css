@@ -14,7 +14,7 @@ input[type=text] {
     border: none !important;
     color: white;
     border-bottom: 1px solid white !important;
-    background-color: rgba(100, 100, 100, 0.288) !important;
+    background-color: rgba(100, 100, 100, 0.4) !important;
     border-radius: 5px;
 }
 
@@ -22,7 +22,7 @@ textarea {
     width: 90%;
     border: none !important;
     color: white;
-    background-color: rgba(100, 100, 100, 0.288) !important;
+    background-color: rgba(100, 100, 100, 0.4) !important;
     border-radius: 5px;
 }
 
@@ -45,7 +45,7 @@ input[type=submit]:hover {
 
 body {
     opacity: 0.95;
-    background-image: url("/images/background.png");
+    background-image: linear-gradient(rgba(140, 82, 255, 0.18), rgba(140, 82, 255, 0.18)), url("/images/background.png");
     background-size: cover;
 }
 
@@ -70,5 +70,5 @@ textarea {
 }
 
 input::placeholder, textarea::placeholder {
-    color: #afafaf;
+    color: #e2e2e2;
 }
