@@ -36,11 +36,7 @@
     }
 }
 
-label {
-    text-align: left;
-}
-
-input {
+input[type=text], input[type=password] {
     width: 90%;
     background-color: rgba(0, 0, 0, 0) !important;
     border: none !important;
@@ -49,7 +45,7 @@ input {
     border-radius: 0 !important;
 }
 
-input:focus {
+input[type=text]:focus, input[type=password]:focus {
     border-bottom: 1px solid #8B52FE !important;
 }
 
@@ -116,7 +112,7 @@ html {
     color: rgba(140, 82, 255);
 }
 
-.btor_text {
+.notSelect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;

@@ -74,10 +74,21 @@ app.use('/api/users/signin', signinLimiter)
 
 var cookieChecker = function (req, res, next) {
     if (userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token)) {
-        res.cookie('token', req.cookies.token, {
-            expires: new Date(Date.now() + 3600000),
-            httpOnly: true
-        })
+        if (req.cookies.remember) {
+            res.cookie('token', req.cookies.token, {
+                httpOnly: true,
+                expires: new Date(Date.now() + 157788000000)
+            })
+            res.cookie('remember', true, {
+                httpOnly: true,
+                expires: new Date(Date.now() + 157788000000)
+            })
+        } else {
+            res.cookie('token', req.cookies.token, {
+                expires: new Date(Date.now() + 604800000),
+                httpOnly: true
+            })
+        }
     }
     next()
 }
@@ -131,6 +142,7 @@ app.get('/threads/:code', (req, res) => {
 
 app.get('/logout', (req, res) => {
     res.clearCookie('token')
+    res.clearCookie('remember')
     res.redirect('/')
 })
 
@@ -169,10 +181,21 @@ app.post('/api/users/new', (req, res) => {
 
     bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
         userDB.prepare('INSERT INTO users (username,id,token,password) VALUES (?,?,?,?)').run(req.body.username, id, token, hash)
-        res.cookie('token', token, {
-            expires: new Date(Date.now() + 3600000),
-            httpOnly: true
-        })
+        if (req.body.remember) {
+            res.cookie('token', token, {
+                httpOnly: true,
+                expires: new Date(Date.now() + 157788000000)
+            })
+            res.cookie('remember', true, {
+                httpOnly: true,
+                expires: new Date(Date.now() + 157788000000)
+            })
+        } else {
+            res.cookie('token', token, {
+                expires: new Date(Date.now() + 604800000),
+                httpOnly: true
+            })
+        }
         res.json({
             message: 'User was created',
             id,
@@ -192,10 +215,21 @@ app.post('/api/users/signin', (req, res) => {
     const user = userDB.prepare('SELECT * FROM users WHERE username=(?)').get(req.body.username)
     bcrypt.compare(req.body.password, user.password, function (error, response) {
         if (response) {
-            res.cookie('token', user.token, {
-                expires: new Date(Date.now() + 3600000),
-                httpOnly: true
-            })
+            if (req.body.remember) {
+                res.cookie('token', user.token, {
+                    httpOnly: true,
+                    expires: new Date(Date.now() + 157788000000)
+                })
+                res.cookie('remember', true, {
+                    httpOnly: true,
+                    expires: new Date(Date.now() + 157788000000)
+                })
+            } else {
+                res.cookie('token', user.token, {
+                    expires: new Date(Date.now() + 604800000),
+                    httpOnly: true
+                })
+            }
             res.json({
                 message: 'Signed in',
                 success: true
@@ -330,17 +364,26 @@ app.post('/api/admin/edit/:object/:id', (req, res) => {
     switch (req.params.object) {
         case 'user':
             userDB.prepare('UPDATE users SET username=(?) WHERE id=(?)').run(req.body.new, req.params.id)
-            res.json({message: 'Username updated successfully', success: true})
+            res.json({
+                message: 'Username updated successfully',
+                success: true
+            })
             break;
 
         case 'thread':
             threadDB.prepare('UPDATE thread_overview SET title=(?) WHERE id=(?)').run(req.body.new, req.params.id)
-            res.json({message: 'Thread title updated successfully', success: true})
+            res.json({
+                message: 'Thread title updated successfully',
+                success: true
+            })
             break;
 
         case 'comment':
             threadDB.prepare('UPDATE thread_comments SET comment=(?) WHERE comment_id=(?)').run(req.body.new, req.params.id)
-            res.json({message: 'Comment updated successfully', success: true})
+            res.json({
+                message: 'Comment updated successfully',
+                success: true
+            })
             break;
 
         default:
@@ -361,17 +404,26 @@ app.delete('/api/admin/delete/:object/:id', (req, res) => {
             userDB.prepare('DELETE FROM users WHERE id=(?)').run(req.params.id)
             threadDB.prepare('DELETE FROM thread_overview WHERE author=(?)').run(req.params.id)
             threadDB.prepare('DELETE FROM thread_comments WHERE author=(?)').run(req.params.id)
-            res.json({message: 'User and all user content deleted successfully', success: true})
+            res.json({
+                message: 'User and all user content deleted successfully',
+                success: true
+            })
             break;
 
         case 'thread':
             threadDB.prepare('DELETE FROM thread_overview WHERE id=(?)').run(req.params.id)
-            res.json({message: 'Thread deleted successfully', success: true})
+            res.json({
+                message: 'Thread deleted successfully',
+                success: true
+            })
             break;
 
         case 'comment':
             threadDB.prepare('DELETE FROM thread_comments WHERE comment_id=(?)').run(req.params.id)
-            res.json({message: 'Comment deleted successfully', success: true})
+            res.json({
+                message: 'Comment deleted successfully',
+                success: true
+            })
             break;
 
         default:

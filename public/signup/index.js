@@ -5,10 +5,12 @@ form.addEventListener('submit', (event) => {
     const formData = new FormData(form)
     const username = formData.get('username')
     const password = formData.get('password')
+    const remember = formData.get('rememberMe')
 
     const body = {
         username,
-        password
+        password,
+        remember
     }
 
     fetch('/api/users/new', {
