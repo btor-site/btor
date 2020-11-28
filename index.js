@@ -101,7 +101,18 @@ app.get('/', (req, res) => {
         res.sendFile(__dirname + '/public/homepage/index.html')
     } else {
         res.clearCookie('token')
+        res.clearCookie('remember')
         res.sendFile(__dirname + '/public/home/index.html')
+    }
+})
+
+app.get('/settings', (req, res) => {
+    if (userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token)) {
+        res.sendFile(__dirname + '/public/settings/index.html')
+    } else {
+        res.clearCookie('token')
+        res.clearCookie('remember')
+        res.redirect('/')
     }
 })
 
@@ -110,6 +121,7 @@ app.get('/signup', (req, res) => {
         res.redirect('/')
     } else {
         res.clearCookie('token')
+        res.clearCookie('remember')
         res.sendFile(__dirname + '/public/signup/index.html')
     }
 })
@@ -119,6 +131,7 @@ app.get('/signin', (req, res) => {
         res.redirect('/')
     } else {
         res.clearCookie('token')
+        res.clearCookie('remember')
         res.sendFile(__dirname + '/public/signin/index.html')
     }
 })
@@ -128,6 +141,7 @@ app.get('/threads/new', (req, res) => {
         res.sendFile(__dirname + '/public/newthread/index.html')
     } else {
         res.clearCookie('token')
+        res.clearCookie('remember')
         res.redirect('/')
     }
 })
@@ -251,6 +265,90 @@ app.get('/api/users/me', (req, res) => {
         message: 'The token is not right'
     })
     res.json(userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token))
+})
+
+app.post('/api/users/update/name', (req, res) => {
+    if (!req.cookies.token) return res.status(401).json({
+        message: 'Valid token cookie is required'
+    })
+    if (!userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)) return res.status(401).json({
+        message: 'The token is not right'
+    })
+    if (!req.body.new) return res.status(400).json({
+        message: 'New is a required field'
+    })
+
+    userDB.prepare('UPDATE users SET username=(?) WHERE token=(?)').run(req.body.new, req.cookies.token)
+    res.json({
+        message: 'Username updated successfully',
+        success: true
+    })
+})
+
+app.post('/api/users/update/password', (req, res) => {
+    if (!req.cookies.token) return res.status(401).json({
+        message: 'Valid token cookie is required'
+    })
+    if (!userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)) return res.status(401).json({
+        message: 'The token is not right'
+    })
+    if (!req.body.oldPassword || !req.body.password) return res.status(400).json({
+        message: req.body.oldPassword ? req.body.password ? endPointError(req.body, '/api/users/update/password ', req.headers) : 'Password is a required field' : req.body.password ? 'OldPassword is a required field' : 'OldPassword and password are both required fields'
+    })
+
+    const user = userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)
+    bcrypt.compare(req.body.oldPassword, user.password, function (error, response) {
+        if (response) {
+            bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+                userDB.prepare('UPDATE users SET password=(?) WHERE token=(?)').run(hash, req.cookies.token)
+                res.json({
+                    message: 'Password was updated',
+                    success: true
+                })
+            })
+        } else {
+            res.status(401).json({
+                message: 'Wrong password'
+            })
+        }
+    })
+})
+
+app.post('/api/users/me/delete', (req, res) => {
+    if (!req.cookies.token) return res.status(401).json({
+        message: 'Valid token cookie is required'
+    })
+    if (!userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)) return res.status(401).json({
+        message: 'The token is not right'
+    })
+    if (!req.body.username || !req.body.password) return res.status(400).json({
+        message: req.body.username ? req.body.password ? endPointError(req.body, '/api/users/me ', req.headers) : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
+    })
+
+    const user = userDB.prepare('SELECT * FROM users WHERE username=(?)').get(req.body.username)
+    bcrypt.compare(req.body.password, user.password, function (error, response) {
+        if (response) {
+            let user = userDB.prepare('SELECT id FROM users WHERE token=(?)').get(req.cookies.token)
+            console.log(user)
+            userDB.prepare('DELETE FROM users WHERE id=(?)').run(user.id)
+            let threads = threadDB.prepare('SELECT id FROM thread_overview WHERE author=(?)').all(user.id)
+            threadDB.prepare('DELETE FROM thread_overview WHERE author=(?)').run(user.id)
+            threadDB.prepare('DELETE FROM thread_comments WHERE author=(?)').run(user.id)
+            threads.forEach(thread => {
+                threadDB.prepare('DELETE FROM thread_comments WHERE id=(?)').run(thread.id)
+            })
+            res.clearCookie('token')
+            res.clearCookie('remember')
+            res.json({
+                message: 'User and all user content deleted successfully',
+                success: true
+            })
+        } else {
+            res.status(401).json({
+                message: 'Wrong password'
+            })
+        }
+    })
 })
 
 app.get('/api/users/:id', (req, res) => {
@@ -402,8 +500,12 @@ app.delete('/api/admin/delete/:object/:id', (req, res) => {
     switch (req.params.object) {
         case 'user':
             userDB.prepare('DELETE FROM users WHERE id=(?)').run(req.params.id)
+            let threads = threadDB.prepare('SELECT id FROM thread_overview WHERE author=(?)').all(req.params.id)
             threadDB.prepare('DELETE FROM thread_overview WHERE author=(?)').run(req.params.id)
             threadDB.prepare('DELETE FROM thread_comments WHERE author=(?)').run(req.params.id)
+            threads.forEach(thread => {
+                threadDB.prepare('DELETE FROM thread_comments WHERE ID=(?)').run(thread.id)
+            })
             res.json({
                 message: 'User and all user content deleted successfully',
                 success: true
