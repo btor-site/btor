@@ -13,7 +13,6 @@ const randtoken = require('rand-token').generator({
 
 const threadDB = new Database('database/threads.db')
 const userDB = new Database('database/users.db')
-const errorDB = new Database('database/errors.db')
 const adminDB = new Database('database/admin.db')
 
 const saltRounds = 10
@@ -23,7 +22,6 @@ threadDB.prepare('CREATE TABLE IF NOT EXISTS thread_comments (ID TEXT, comment_i
 threadDB.prepare('CREATE TABLE IF NOT EXISTS thread_overview (ID TEXT, title TEXT, author TEXT)').run()
 userDB.prepare('CREATE TABLE IF NOT EXISTS users (username TEXT, id TEXT, token TEXT, password TEXT)').run()
 adminDB.prepare('CREATE TABLE IF NOT EXISTS urls (url TEXT)').run()
-errorDB.prepare('CREATE TABLE IF NOT EXISTS errors (ID TEXT, error TEXT, other TEXT)').run()
 
 
 const userLimiter = rateLimit({
@@ -60,6 +58,8 @@ const signinLimiter = rateLimit({
 
 
 const app = express()
+app.set('view engine', 'ejs')
+app.set('views', 'public')
 app.listen(process.env.PORT, () => {
     console.log(`Listening on port ${process.env.PORT}`)
 })
@@ -98,7 +98,7 @@ app.use(cookieChecker)
 
 app.get('/', (req, res) => {
     if (userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token)) {
-        res.sendFile(__dirname + '/public/homepage/index.html')
+        res.render('homepage/index', userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token))
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
@@ -108,7 +108,7 @@ app.get('/', (req, res) => {
 
 app.get('/settings', (req, res) => {
     if (userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token)) {
-        res.sendFile(__dirname + '/public/settings/index.html')
+        res.render('settings/index', userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token))
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
@@ -138,7 +138,7 @@ app.get('/signin', (req, res) => {
 
 app.get('/threads/new', (req, res) => {
     if (userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token)) {
-        res.sendFile(__dirname + '/public/newthread/index.html')
+        res.render('newthread/index', userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token))
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
@@ -148,9 +148,11 @@ app.get('/threads/new', (req, res) => {
 
 app.get('/threads/:code', (req, res) => {
     if (userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token)) {
-        res.sendFile(__dirname + '/public/thread/index.html')
+        res.render('thread/index', userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token))
     } else {
-        res.sendFile(__dirname + '/public/thread/nocomment.html')
+        res.clearCookie('token')
+        res.clearCookie('remember')
+        res.redirect('/')
     }
 })
 
@@ -176,7 +178,7 @@ app.get('/images/:path', (req, res) => {
 
 app.post('/api/users/new', (req, res) => {
     if (!req.body.username || !req.body.password) return res.status(400).json({
-        message: req.body.username ? req.body.password ? endPointError(req.body, '/api/users/new', req.headers) : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
+        message: req.body.username ? req.body.password ? 'An unexpected error occured, please try again later' : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
     })
     if (userDB.prepare('SELECT * FROM users WHERE username=(?)').get(req.body.username)) return res.status(409).json({
         message: 'A user with that name already exists'
@@ -220,10 +222,10 @@ app.post('/api/users/new', (req, res) => {
 
 app.post('/api/users/signin', (req, res) => {
     if (!req.body.username || !req.body.password) return res.status(400).json({
-        message: req.body.username ? req.body.password ? endPointError(req.body, '/api/users/signin ', req.headers) : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
+        message: req.body.username ? req.body.password ? 'An unexpected error occured, please try again later' : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
     })
     if (!userDB.prepare('SELECT * FROM users WHERE username=(?)').get(req.body.username)) return res.status(404).json({
-        message: 'Incorrect Username or Password'
+        message: 'User was not found'
     })
 
     const user = userDB.prepare('SELECT * FROM users WHERE username=(?)').get(req.body.username)
@@ -254,17 +256,6 @@ app.post('/api/users/signin', (req, res) => {
             })
         }
     })
-
-})
-
-app.get('/api/users/me', (req, res) => {
-    if (!req.cookies.token) return res.status(401).json({
-        message: 'Valid token cookie is required'
-    })
-    if (!userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)) return res.status(401).json({
-        message: 'The token is not right'
-    })
-    res.json(userDB.prepare('SELECT username FROM users WHERE token=(?)').get(req.cookies.token))
 })
 
 app.post('/api/users/update/name', (req, res) => {
@@ -293,7 +284,7 @@ app.post('/api/users/update/password', (req, res) => {
         message: 'The token is not right'
     })
     if (!req.body.oldPassword || !req.body.password) return res.status(400).json({
-        message: req.body.oldPassword ? req.body.password ? endPointError(req.body, '/api/users/update/password ', req.headers) : 'Password is a required field' : req.body.password ? 'OldPassword is a required field' : 'OldPassword and password are both required fields'
+        message: req.body.oldPassword ? req.body.password ? 'An unexpected error occured, please try again later' : 'Password is a required field' : req.body.password ? 'OldPassword is a required field' : 'OldPassword and password are both required fields'
     })
 
     const user = userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)
@@ -322,14 +313,13 @@ app.post('/api/users/me/delete', (req, res) => {
         message: 'The token is not right'
     })
     if (!req.body.username || !req.body.password) return res.status(400).json({
-        message: req.body.username ? req.body.password ? endPointError(req.body, '/api/users/me ', req.headers) : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
+        message: req.body.username ? req.body.password ? 'An unexpected error occured, please try again later' : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
     })
 
     const user = userDB.prepare('SELECT * FROM users WHERE username=(?)').get(req.body.username)
     bcrypt.compare(req.body.password, user.password, function (error, response) {
         if (response) {
             let user = userDB.prepare('SELECT id FROM users WHERE token=(?)').get(req.cookies.token)
-            console.log(user)
             userDB.prepare('DELETE FROM users WHERE id=(?)').run(user.id)
             let threads = threadDB.prepare('SELECT id FROM thread_overview WHERE author=(?)').all(user.id)
             threadDB.prepare('DELETE FROM thread_overview WHERE author=(?)').run(user.id)
@@ -352,17 +342,24 @@ app.post('/api/users/me/delete', (req, res) => {
 })
 
 app.get('/api/users/:id', (req, res) => {
+    if (!req.cookies.token) return res.status(401).json({
+        message: 'Valid token cookie is required'
+    })
     if (!userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)) return res.status(401).json({
         message: 'The token is not right'
     })
+
     res.json(userDB.prepare('SELECT username FROM users WHERE id=(?)').get(req.params.id))
 })
 
-app.get('/api/users/all', (req, res) => {
-    res.json(userDB.prepare('SELECT username,id FROM users').all())
-})
-
 app.get('/api/threads/all', (req, res) => {
+    if (!req.cookies.token) return res.status(401).json({
+        message: 'Valid token cookie is required'
+    })
+    if (!userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)) return res.status(401).json({
+        message: 'The token is not right'
+    })
+
     res.json(threadDB.prepare('SELECT ID,title,author FROM thread_overview WHERE ID IS NOT NULL').all().reverse())
 })
 
@@ -374,7 +371,7 @@ app.post('/api/threads/new', (req, res) => {
         message: 'The token is not right'
     })
     if (!req.body.message || !req.body.title) return res.status(400).json({
-        message: req.body.message ? req.body.title ? endPointError(req.body, '/api/threads/new', req.headers) : 'Title is a required field' : req.body.title ? 'Message is a required field' : 'Message and title are both required fields'
+        message: req.body.message ? req.body.title ? 'An unexpected error occured, please try again later' : 'Title is a required field' : req.body.title ? 'Message is a required field' : 'Message and title are both required fields'
     })
 
     let code = nanoid(10)
@@ -418,6 +415,12 @@ app.post('/api/threads/:code/comments/new', (req, res) => {
 })
 
 app.get('/api/threads/:code/comments', (req, res) => {
+    if (!req.cookies.token) return res.status(401).json({
+        message: 'Valid token cookie is required'
+    })
+    if (!userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)) return res.status(401).json({
+        message: 'The token is not right'
+    })
     if (!threadDB.prepare('SELECT * FROM thread_overview WHERE ID=(?)').get(req.params.code)) return res.status(404).json({
         message: 'The thread was not found'
     })
@@ -430,9 +433,16 @@ app.get('/api/threads/:code/comments', (req, res) => {
 })
 
 app.post('/api/threads/search', (req, res) => {
+    if (!req.cookies.token) return res.status(401).json({
+        message: 'Valid token cookie is required'
+    })
+    if (!userDB.prepare('SELECT * FROM users WHERE token=(?)').get(req.cookies.token)) return res.status(401).json({
+        message: 'The token is not right'
+    })
     if (!req.body.query) return res.status(400).json({
         message: 'You need to include the search query'
     })
+
     res.json(threadDB.prepare('SELECT ID,title,author FROM thread_overview WHERE ID IS NOT NULL').all().reverse().filter(thread => thread.title.toLowerCase().includes(req.body.query.toLowerCase())))
 })
 
@@ -445,7 +455,6 @@ app.delete('/api/admin/all', (req, res) => { // NOTE No frontend
     userDB.prepare('DELETE FROM users').run()
     threadDB.prepare('DELETE FROM thread_comments').run()
     threadDB.prepare('DELETE FROM thread_overview').run()
-    errorDB.prepare('DELETE FROM errors').run()
     res.json({
         message: 'Deleted everything'
     })
@@ -540,7 +549,7 @@ app.get('/api/admin/users/all', (req, res) => {
     if (req.headers.authorization !== process.env.ADMIN_PASSWORD) return res.status(401).json({
         message: 'Admin password not correct'
     })
-    res.json(userDB.prepare('SELECT * FROM users').all())
+    res.json(userDB.prepare('SELECT username,id,token FROM users').all())
 })
 
 app.get('/api/admin/id/:name', (req, res) => {
@@ -555,9 +564,6 @@ app.post('/api/admin/sql/select/:db', (req, res) => { // NOTE No frontend
         message: 'Admin password not correct'
     })
     switch (req.params.db) {
-        case 'error':
-            res.json(errorDB.prepare(req.body.query).all())
-            break
         case 'user':
             res.json(userDB.prepare(req.body.query).all())
             break
@@ -576,13 +582,9 @@ app.post('/api/admin/sql/query/:db', (req, res) => { // NOTE No frontend
         message: 'Admin password not correct'
     })
     if (!req.body.run || !req.body.get) return res.status(400).json({
-        message: req.body.run ? req.body.get ? endPointError(req.body, '/api/threads/new', req.headers) : 'Get is a required field' : req.body.get ? 'Run is a required field' : 'Run and get are both required fields'
+        message: req.body.run ? req.body.get ? 'An unexpected error occured, please try again later' : 'Get is a required field' : req.body.get ? 'Run is a required field' : 'Run and get are both required fields'
     })
     switch (req.params.db) {
-        case 'error':
-            errorDB.prepare(req.body.run).run()
-            res.json(errorDB.prepare(req.body.get).all())
-            break
         case 'user':
             userDB.prepare(req.body.run).run()
             res.json(userDB.prepare(req.body.get).all())
@@ -593,7 +595,7 @@ app.post('/api/admin/sql/query/:db', (req, res) => { // NOTE No frontend
             break
         default:
             res.status(400).json({
-                message: 'DB parameter incorrect, either choose error, user or thread'
+                message: 'DB parameter incorrect, either choose user or thread'
             })
     }
 })
@@ -626,33 +628,3 @@ app.get('/admin/code', (req, res) => {
 app.get('/admin', (req, res) => {
     res.sendFile(__dirname + '/public/adminsignin/index.html')
 })
-
-app.get('/api/admin/errors/search/:code', (req, res) => {
-    if (req.headers.authorization !== process.env.ADMIN_PASSWORD) return res.status(401).json({
-        message: 'Admin password not correct'
-    })
-    res.json(errorDB.prepare('SELECT * FROM errors WHERE ID = (?)').all(req.params.code))
-})
-
-app.get('/api/admin/errors', (req, res) => {
-    if (req.headers.authorization !== process.env.ADMIN_PASSWORD) return res.status(401).json({
-        message: 'Admin password not correct'
-    })
-    res.json(errorDB.prepare('SELECT * FROM errors').all())
-})
-
-function endPointError(requestBody, endPoint, other) {
-    const code = nanoid(10)
-
-    while (errorDB.prepare('SELECT * FROM errors WHERE ID=(?)').get(code)) {
-        code = nanoid(10)
-    }
-
-    const errorBody = {
-        endPoint: endPoint,
-        body: requestBody
-    }
-
-    errorDB.prepare('INSERT INTO errors (ID,error,other) VALUES (?,?,?)').run(code, JSON.stringify(errorBody), JSON.stringify(other))
-    return `Fatal error, please contact support with the ID ${code}`
-}

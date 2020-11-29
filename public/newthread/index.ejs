@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTOR - New thread</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="stylesheet" href="/styles/newthread/styles.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+</head>
+<body>
+    <div class="container">
+        <h3 class="title">New thread</h3>
+        <form id="threadForm">
+            <input type="text" name="title" id="title" required placeholder="Title">
+            <br>
+            <textarea type="text" id="message" required name="message" placeholder="Message"></textarea>
+            <br>
+            <input type="submit" value="Create">
+        </form>
+        <p>Logged in as: <%=username%></p>
+        <p><a class="link" href="/">Return home</a></p>
+    </div>
+    <script src="/scripts/newthread/index.js"></script>
+</body>
+</html>

@@ -1,5 +1,4 @@
 const form = document.getElementById('threadForm')
-const loggedInAs = document.getElementById('loggedInAs')
 
 form.addEventListener('submit', (event) => {
     event.preventDefault()
@@ -28,15 +27,3 @@ form.addEventListener('submit', (event) => {
             }
         })
 })
-
-
-fetch('/api/users/me')
-    .then(response => response.json())
-    .then(result => {
-        if (!result.username) {
-            alert('You need to be logged in to do that')
-            window.location.href = '/signin'
-        } else {
-            loggedInAs.innerText = `Logged in as: ${result.username}`
-        }
-    })

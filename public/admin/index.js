@@ -89,8 +89,7 @@ function table() {
                 headers: {
                     0: 'Username',
                     1: 'ID',
-                    2: 'Token',
-                    3: 'Password hash'
+                    2: 'Token'
                 }
             });
         })
