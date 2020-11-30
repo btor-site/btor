@@ -1,13 +1,14 @@
 const threadsField = document.getElementById('threads')
 const searchBar = document.getElementById('searchBar')
 let userCache = {}
+let threads
 
 function loadThreads() {
-    threadsField.innerHTML = ''
     fetch('/api/threads/all')
-        .then(response => response.json())
-        .then(async (result) => {
-            let users = [...new Set(result.map(e => e.author))]
+    .then(response => response.json())
+    .then(async (result) => {
+        if (result === threads) return
+        let users = [...new Set(result.map(e => e.author))]
             function cache() {
                 return new Promise((resolve) => {
                     users.forEach((e, i) => {
@@ -25,9 +26,11 @@ function loadThreads() {
                 })
             }
             await cache()
+            threadsField.innerHTML = ''
             result.forEach(thread => {
-                threadsField.innerHTML += `<div class="thread"><a class="title" href="/threads/${thread.ID}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</a> by ${userCache[thread.author]}</div>`
+                threadsField.innerHTML += `<a href="/threads/${thread.ID}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.ID}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>`
             });
+            threads = result
         })
 }
 
@@ -54,3 +57,7 @@ searchBar.addEventListener('input', (event) => {
 })
 
 loadThreads()
+
+setTimeout(() => {
+    loadThreads()
+}, 5000);

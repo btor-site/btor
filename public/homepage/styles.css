@@ -32,11 +32,12 @@ hr {
 
 .thread {
     background-color: #f2f2f2;
-    box-shadow: 1px 10px 15px -10px rgba(0,0,0,0.9);
     padding: 10px;
     border-radius: 10px;
     margin: 20px auto;
     width: 35%;
+    text-decoration: none;
+    border: 1px solid #d1d1d1;
 }
 
 .title {
@@ -86,4 +87,15 @@ hr {
 
 .searchBar:hover {
     background-color: #F5F5F5;
+}
+
+.threadLink {
+    text-decoration: none;
+    color: black;
+}
+
+.thread:hover {
+    color: black;
+    border: 1px solid #888888;
+    background-color: #e7e7e7;
 }

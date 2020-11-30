@@ -44,9 +44,15 @@ input[type=submit]:hover {
 }
 
 body {
-    opacity: 0.95;
     background-image: linear-gradient(rgba(140, 82, 255, 0.18), rgba(140, 82, 255, 0.18)), url("/images/background.png");
+    background-position: center;
+    background-repeat: no-repeat;
     background-size: cover;
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+html {
+    height: 100%;
 }
 
 .link {
