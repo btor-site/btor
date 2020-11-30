@@ -96,11 +96,9 @@ function table() {
 }
 
 function show(pg) {
-    if(pg === '.page2' && !password.value) return alert('password')
+    if(pg === '.page2' && !password.value) return alert('Password')
     if(pg === '.page2') table()
     document.querySelector('.page1').hidden = true
     document.querySelector('.page2').hidden = true
-    document.querySelector('.page3').hidden = true
-    document.querySelector('.page4').hidden = true
     document.querySelector(pg).hidden = false
 }

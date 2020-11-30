@@ -28,7 +28,7 @@ function loadThreads() {
             await cache()
             threadsField.innerHTML = ''
             result.forEach(thread => {
-                threadsField.innerHTML += `<a href="/threads/${thread.ID}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.ID}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>`
+                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>`
             });
             threads = result
         })
@@ -51,7 +51,7 @@ searchBar.addEventListener('input', (event) => {
         .then(result => {
             threadsField.innerHTML = ''
             result.forEach(thread => {
-                threadsField.innerHTML += `<div class="thread"><a class="title" href="/threads/${thread.ID}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</a> by ${userCache[thread.author]}</div>`
+                threadsField.innerHTML += `<div class="thread"><a class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</a> by ${userCache[thread.author]}</div>`
             });
         })
 })
