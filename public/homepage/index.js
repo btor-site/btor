@@ -58,6 +58,6 @@ searchBar.addEventListener('input', (event) => {
 
 loadThreads()
 
-setTimeout(() => {
+setInterval(() => {
     loadThreads()
 }, 5000);

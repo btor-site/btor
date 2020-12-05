@@ -104,8 +104,4 @@ dist
 .tern-port
 
 # Other
-errors.db
-threads.db
-users.db
-admin.db
 requests.http
