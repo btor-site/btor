@@ -4,6 +4,10 @@ const express = require('express')
 const bcrypt = require('bcrypt')
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
+const http = require('http')
+const WebSocket = require('ws')
+const url = require('url')
+const cookie = require('cookie')
 const {
     nanoid
 } = require('nanoid')
@@ -55,11 +59,15 @@ const signinLimiter = rateLimit({
 
 
 const app = express()
+const server = http.createServer(app)
+const wss = new WebSocket.Server({
+    server
+})
 app.set('view engine', 'ejs')
 app.set('views', 'public')
-app.listen(process.env.PORT, () => {
-    console.log(`Listening on port ${process.env.PORT}`)
-})
+server.listen(process.env.PORT, () => {
+    console.log(`Server started on port ${server.address().port}`);
+});
 
 app.use(express.json())
 app.use(cookieParser())
@@ -97,7 +105,23 @@ app.use(cookieChecker)
 app.get('/', async (req, res) => {
     const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
     if (user) {
-        res.render('homepage/index', user)
+        let body = {
+            threads: await thread_overviewDB.find(),
+            usernames: {}
+        }
+        body.threads.reverse()
+        let users = [...new Set(body.threads.map(e => e.author))]
+        async function getNames() {
+            return new Promise((resolve) => {
+                users.forEach(async (e, i) => {
+                    let username = await usersDB.findOne({id: e})
+                    body.usernames[e] = username.username
+                    if (i === users.length -1) resolve()
+                })
+            })
+        }
+        if(users[0]) await getNames()
+        res.render('homepage/index', {username: user.username, threads: body})
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
@@ -151,8 +175,29 @@ app.get('/threads/new', async (req, res) => {
 
 app.get('/threads/:code', async (req, res) => {
     const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
+    const thread = await thread_overviewDB.findOne({id: req.params.code})
     if (user) {
-        res.render('thread/index', user)
+        if(thread) {
+            let body = {
+                title: thread.title,
+                comments: await thread_commentsDB.find({id: req.params.code}, {projection: {author: 1, comment: 1, comment_id: 1}}),
+                usernames: {}
+            }
+            let users = [...new Set(body.comments.map(e => e.author))]
+            async function getNames() {
+                return new Promise((resolve) => {
+                    users.forEach(async (e, i) => {
+                        let username = await usersDB.findOne({id: e})
+                        body.usernames[e] = username.username
+                        if (i === users.length -1) resolve()
+                    })
+                })
+            }
+            if(users[0]) await getNames()
+            res.render('thread/index', {username: user.username, thread: body})
+        } else {
+            res.redirect('/')
+        }
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
@@ -387,6 +432,8 @@ app.post('/api/threads/new', async (req, res) => {
         code = nanoid(10)
     }
 
+    sendAll('all', {id: code, title: req.body.title, author: user.id})
+
     await thread_overviewDB.insert({id: code, title: req.body.title, author: user.id})
     await thread_commentsDB.insert({id: code, comment_id: code, author: user.id, comment: req.body.message})
     res.json({
@@ -415,6 +462,8 @@ app.post('/api/threads/:code/comments/new', async (req, res) => {
     }
 
     await thread_commentsDB.insert({id: req.params.code, comment_id: code, author: user.id, comment: req.body.message})
+
+    sendAll(req.params.code, {id: req.params.code, comment_id: code, author: user.id, comment: req.body.message})
     
     res.json({
         message: 'Added comment',
@@ -598,3 +647,25 @@ app.get('/admin/panel/:code', async (req, res) => {
 app.get('/admin', async (req, res) => {
     res.sendFile(__dirname + '/public/adminsignin/index.html')
 })
+
+wss.on('connection', async (ws, req) => {
+    ws.id = url.parse(req.url, true).query.id
+    let thread
+    if(ws.id !== 'all') {
+        thread = await thread_overviewDB.findOne({id: ws.id})
+        if(!thread) return ws.terminate()
+    }
+    const cookies = cookie.parse(req.headers.cookie)
+    const user = await usersDB.findOne({token: cookies.token})
+    if(!user) return ws.terminate()
+
+    ws.on('message', (message) => {
+        console.log(`Recieved message: ${message}`);
+    });
+});
+
+function sendAll(id, content) {
+    wss.clients.forEach(ws => {
+        if(ws.id === id) ws.send(JSON.stringify(content))
+    })
+}

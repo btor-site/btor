@@ -1,38 +1,6 @@
 const threadsField = document.getElementById('threads')
 const searchBar = document.getElementById('searchBar')
 let userCache = {}
-let threads
-
-function loadThreads() {
-    fetch('/api/threads/all')
-    .then(response => response.json())
-    .then(async (result) => {
-        if (result === threads) return
-        let users = [...new Set(result.map(e => e.author))]
-            function cache() {
-                return new Promise((resolve) => {
-                    users.forEach((e, i) => {
-                        if (userCache[e]) {if (i === users.length -1) resolve()} else {
-                            fetch(`/api/users/${e}`)
-                                .then(response => response.json())
-                                .then(result => {
-                                    if (result.username) {
-                                        userCache[e] = result.username
-                                        if (i === users.length -1) resolve()
-                                    }
-                                })
-                        }
-                    })
-                })
-            }
-            await cache()
-            threadsField.innerHTML = ''
-            result.forEach(thread => {
-                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>`
-            });
-            threads = result
-        })
-}
 
 searchBar.addEventListener('input', (event) => {
     const query = event.target.value
@@ -56,8 +24,39 @@ searchBar.addEventListener('input', (event) => {
         })
 })
 
-loadThreads()
+const url = `${window.location.origin.replace('http', 'ws')}/threads?id=all`
+const connection = new WebSocket(url)
 
-setInterval(() => {
-    loadThreads()
-}, 5000);
+connection.onopen = () => {
+    console.log('Connected')
+}
+
+connection.onerror = (error) => {
+    console.log(`WebSocket error: ${error}`)
+}
+
+connection.onmessage = (e) => {
+    loadThread(JSON.parse(e.data))
+}
+
+async function loadThread(thread) {
+    function cache() {
+        return new Promise((resolve) => {
+            if (userCache[thread.author]) {
+                resolve();
+            } else {
+                fetch(`/api/users/${thread.author}`)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.username) {
+                            userCache[thread.author] = result.username
+                            resolve();
+                        }
+                    })
+            }
+        })
+    }
+    await cache()
+
+    threadsField.innerHTML = `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>` + threadsField.innerHTML
+}

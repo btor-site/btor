@@ -19,8 +19,12 @@
         <hr>
     </div>
     <hr>
-    <h5 id="title" class="title"></h5>
-    <div id="comments"></div>
+    <h5 id="title" class="title"><%=thread.title%></h5>
+    <div id="comments">
+        <% thread.comments.forEach((comment)=>{%>
+        <div class="comment"><h3 class="author"><%=thread.usernames[comment.author]%>:</h3><%=comment.comment%><p class="comment-id">ID: <%=comment.comment_id%></p></div>
+        <%});%>
+    </div>
     <br>
     <div class="formContainer">
         <form id="commentForm">
