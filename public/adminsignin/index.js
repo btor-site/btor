@@ -23,7 +23,7 @@ form.addEventListener('submit', (event) => {
                 window.location.href = `/admin/panel/${result.code}`
             } else {
                 alert(result.message)
-                document.querySelector("#password").value = ''
+                document.querySelector('#password').value = ''
             }
         })
 })

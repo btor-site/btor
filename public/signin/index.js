@@ -27,7 +27,7 @@ form.addEventListener('submit', (event) => {
                 window.location.href = '/'
             } else {
                 alert(result.message)
-                document.querySelector("#password").value = ''
+                document.querySelector('#password').value = ''
             }
         })
 })
