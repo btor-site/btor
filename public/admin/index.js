@@ -4,7 +4,7 @@ const editForm = document.querySelector('.editForm')
 const userIdForm = document.querySelector('.userIdForm')
 const userIDField = document.getElementById('userID')
 const copyId = document.getElementById('copyId')
-new ClipboardJS('.userIDbtn');
+new ClipboardJS('.userIDbtn')
 
 deleteForm.addEventListener('submit', (event) => {
     event.preventDefault()
@@ -102,7 +102,7 @@ function table() {
                 field: 'token'
             }
         ]
-    });
+    })
     const ajaxConfig = {
         method: 'GET',
         headers: {
@@ -114,7 +114,7 @@ function table() {
             column: 'Username',
             dir: 'asc'
         }, ],
-    }, ajaxConfig);
+    }, ajaxConfig)
 }
 
 function show(pg) {

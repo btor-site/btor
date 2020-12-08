@@ -4,7 +4,7 @@
 
 .adminPwd {
     width: 100%;
-    background-color: rgba(0,0,0,0) !important;
+    background-color: rgba(0, 0, 0, 0) !important;
     border: none !important;
     border-bottom: 2px solid rgb(180, 180, 180) !important;
     border-radius: 0 !important;
@@ -57,7 +57,9 @@ input[type=submit]:hover {
     font-size: 20px;
 }
 
-table, th, td {
+table,
+th,
+td {
     margin-top: 10px;
     padding: 5px;
 }

@@ -14,15 +14,15 @@ form.addEventListener('submit', (event) => {
     }
 
     fetch('/api/users/new', {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-            'content-type': 'application/json'
-        }
-    })
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                'content-type': 'application/json'
+            }
+        })
         .then(response => response.json())
         .then(result => {
-            if(result.success) {
+            if (result.success) {
                 form.reset()
                 window.location.href = '/'
             } else {

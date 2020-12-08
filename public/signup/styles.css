@@ -36,7 +36,8 @@
     }
 }
 
-input[type=text], input[type=password] {
+input[type=text],
+input[type=password] {
     width: 90%;
     background-color: rgba(0, 0, 0, 0) !important;
     border: none !important;
@@ -45,7 +46,8 @@ input[type=text], input[type=password] {
     border-radius: 0 !important;
 }
 
-input[type=text]:focus, input[type=password]:focus {
+input[type=text]:focus,
+input[type=password]:focus {
     border-bottom: 1px solid #8B52FE !important;
 }
 
@@ -67,7 +69,7 @@ input[type=submit]:hover {
 }
 
 body {
-    background-image: linear-gradient(rgba(140, 82, 255, 0.18), rgba(140, 82, 255, 0.18)), url("/images/background.png");
+    background-image: linear-gradient(rgba(140, 82, 255, 0.18), rgba(140, 82, 255, 0.18)), url("/assets/background.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

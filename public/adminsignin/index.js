@@ -10,15 +10,15 @@ form.addEventListener('submit', (event) => {
     }
 
     fetch('/api/admin/signin', {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-            'content-type': 'application/json'
-        }
-    })
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                'content-type': 'application/json'
+            }
+        })
         .then(response => response.json())
         .then(result => {
-            if(result.code) {
+            if (result.code) {
                 form.reset()
                 window.location.href = `/admin/panel/${result.code}`
             } else {

@@ -36,7 +36,7 @@ hr {
 }
 
 body {
-    background-image: linear-gradient(rgba(140, 82, 255, 0.8), rgba(140, 82, 255, 0.8)), url("/images/background.png");
+    background-image: linear-gradient(rgba(140, 82, 255, 0.8), rgba(140, 82, 255, 0.8)), url("/assets/background.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

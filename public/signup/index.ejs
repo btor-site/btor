@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>BTOR - Sign up</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="stylesheet" href="/styles/signup/styles.css">
+</head>
+
+<body>
+    <div class="btor_text notSelect">
+        <img src="/assets/logo_white.png" height="45">
+        <p><span class="purple"> B</span>TOR.</p>
+    </div>
+    <div class="container">
+        <h3 class="title"><img class="logo" src="/assets/signup.png" height="40"></h3>
+        <form id="signupForm">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <br>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <br>
+            <label class="remember notSelect">
+                <input type="checkbox" checked name="rememberMe" id="rememberMe"> Remember me
+            </label>
+            <br>
+            <input type="submit" value="Sign up">
+        </form>
+        <p>Already have an account? <a class="link" href="/signin">Sign in</a></p>
+        <p><a class="link" href="/">Return home</a></p>
+    </div>
+    <script src="/scripts/signup/index.js"></script>
+</body>
+
+</html>

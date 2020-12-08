@@ -20,7 +20,7 @@ form.addEventListener('submit', (event) => {
         })
         .then(response => response.json())
         .then(result => {
-            if(result.success) {
+            if (result.success) {
                 window.location.href = `/threads/${result.code}`
             } else {
                 alert(result.message)

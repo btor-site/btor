@@ -6,7 +6,7 @@
     top: 75px;
     background-color: rgba(255, 255, 255, 0);
     width: 45% !important;
-    box-shadow: -1px 10px 50px 13px rgba(0,0,0,1);
+    box-shadow: -1px 10px 50px 13px rgba(0, 0, 0, 1);
 }
 
 input[type=text] {
@@ -44,7 +44,7 @@ input[type=submit]:hover {
 }
 
 body {
-    background-image: linear-gradient(rgba(140, 82, 255, 0.18), rgba(140, 82, 255, 0.18)), url("/images/background.png");
+    background-image: linear-gradient(rgba(140, 82, 255, 0.18), rgba(140, 82, 255, 0.18)), url("/assets/background.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -75,6 +75,7 @@ textarea {
     resize: none;
 }
 
-input::placeholder, textarea::placeholder {
+input::placeholder,
+textarea::placeholder {
     color: #e2e2e2;
 }

@@ -8,6 +8,7 @@ const http = require('http')
 const WebSocket = require('ws')
 const url = require('url')
 const cookie = require('cookie')
+const compression = require('compression')
 const {
     nanoid
 } = require('nanoid')
@@ -65,12 +66,14 @@ const wss = new WebSocket.Server({
 })
 app.set('view engine', 'ejs')
 app.set('views', 'public')
+app.disable('x-powered-by')
 server.listen(process.env.PORT, () => {
-    console.log(`Server started on port ${server.address().port}`);
-});
+    console.log(`Server started on port ${server.address().port}`)
+})
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(compression())
 
 app.use('/api/users/new', userLimiter)
 app.use('/api/threads/new', threadLimiter)
@@ -125,7 +128,7 @@ app.get('/', async (req, res) => {
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
-        res.sendFile(__dirname + '/public/home/index.html')
+        res.render('home/index')
     }
 })
 
@@ -147,7 +150,7 @@ app.get('/signup', async (req, res) => {
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
-        res.sendFile(__dirname + '/public/signup/index.html')
+        res.render('signup/index')
     }
 })
 
@@ -158,7 +161,7 @@ app.get('/signin', async (req, res) => {
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
-        res.sendFile(__dirname + '/public/signin/index.html')
+        res.render('signin/index')
     }
 })
 
@@ -219,8 +222,8 @@ app.get('/styles/:page/styles.css', async (req, res) => {
     res.sendFile(__dirname + `/public/${req.params.page}/styles.css`)
 })
 
-app.get('/images/:path', async (req, res) => {
-    res.sendFile(__dirname + `/public/images/${req.params.path}`)
+app.get('/assets/:path', async (req, res) => {
+    res.sendFile(__dirname + `/public/assets/${req.params.path}`)
 })
 
 // API
@@ -641,11 +644,11 @@ app.post('/api/admin/signin', async (req, res) => {
 app.get('/admin/panel/:code', async (req, res) => {
     if (!adminPanelCodes.includes(req.params.code)) return res.redirect('/admin')
     adminPanelCodes.splice(adminPanelCodes.indexOf(req.params.code), 1)
-    res.sendFile(__dirname + '/public/admin/index.html')
+    res.render('admin/index')
 })
 
 app.get('/admin', async (req, res) => {
-    res.sendFile(__dirname + '/public/adminsignin/index.html')
+    res.render('adminsignin/index')
 })
 
 wss.on('connection', async (ws, req) => {
@@ -660,9 +663,9 @@ wss.on('connection', async (ws, req) => {
     if(!user) return ws.terminate()
 
     ws.on('message', (message) => {
-        console.log(`Recieved message: ${message}`);
-    });
-});
+        console.log(`Recieved message: ${message}`)
+    })
+})
 
 function sendAll(id, content) {
     wss.clients.forEach(ws => {

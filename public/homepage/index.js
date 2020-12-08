@@ -20,7 +20,7 @@ searchBar.addEventListener('input', (event) => {
             threadsField.innerHTML = ''
             result.forEach(thread => {
                 threadsField.innerHTML += `<div class="thread"><a class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</a> by ${userCache[thread.author]}</div>`
-            });
+            })
         })
 })
 
@@ -43,14 +43,14 @@ async function loadThread(thread) {
     function cache() {
         return new Promise((resolve) => {
             if (userCache[thread.author]) {
-                resolve();
+                resolve()
             } else {
                 fetch(`/api/users/${thread.author}`)
                     .then(response => response.json())
                     .then(result => {
                         if (result.username) {
                             userCache[thread.author] = result.username
-                            resolve();
+                            resolve()
                         }
                     })
             }

@@ -49,14 +49,14 @@ async function loadComment(comment) {
     function cache() {
         return new Promise((resolve) => {
             if (userCache[comment.author]) {
-                resolve();
+                resolve()
             } else {
                 fetch(`/api/users/${comment.author}`)
                     .then(response => response.json())
                     .then(result => {
                         if (result.username) {
                             userCache[comment.author] = result.username
-                            resolve();
+                            resolve()
                         }
                     })
             }
