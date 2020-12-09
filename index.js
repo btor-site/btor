@@ -589,7 +589,7 @@ app.delete('/api/admin/delete/:object/:id', async (req, res) => {
 
         case 'thread':
             await thread_overviewDB.remove({id: req.params.id})
-            await thread_commentsDB.remove({id: thread.id})
+            await thread_commentsDB.remove({id: req.params.id})
             res.json({
                 message: 'Thread deleted successfully',
                 success: true
