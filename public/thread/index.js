@@ -29,8 +29,8 @@ form.addEventListener('submit', (event) => {
         })
 })
 
+/* Temporarily removed
 const url = `${window.location.origin.replace('http', 'ws')}/threads?id=${window.location.pathname.split('/')[2]}`
-console.log(url)
 const connection = new WebSocket(url)
 
 connection.onopen = () => {
@@ -44,6 +44,7 @@ connection.onerror = (error) => {
 connection.onmessage = (e) => {
     loadComment(JSON.parse(e.data))
 }
+*/
 
 async function loadComment(comment) {
     function cache() {
