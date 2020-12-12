@@ -24,7 +24,6 @@ searchBar.addEventListener('input', (event) => {
         })
 })
 
-/* Temporarily removed
 const url = `${window.location.origin.replace('http', 'ws')}/threads?id=all`
 const connection = new WebSocket(url)
 
@@ -39,7 +38,6 @@ connection.onerror = (error) => {
 connection.onmessage = (e) => {
     loadThread(JSON.parse(e.data))
 }
-*/
 
 async function loadThread(thread) {
     function cache() {

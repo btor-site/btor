@@ -188,12 +188,13 @@ app.get('/threads/:code', async (req, res) => {
             }
             let users = [...new Set(body.comments.map(e => e.author))]
             async function getNames() {
-                return new Promise((resolve) => {
-                    users.forEach(async (e, i) => {
+                return new Promise(async (resolve) => {
+                    for (let i = 0; i < users.length; i++) {
+                        const e = users[i];
                         let username = await usersDB.findOne({id: e})
                         body.usernames[e] = username.username
                         if (i === users.length -1) resolve()
-                    })
+                    }
                 })
             }
             if(users[0]) await getNames()
