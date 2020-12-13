@@ -91,11 +91,13 @@ function table() {
             },
             {
                 title: 'MongoDB ID',
-                field: '_id'
+                field: '_id',
+                width: 250
             },
             {
                 title: 'User ID',
-                field: 'id'
+                field: 'id',
+                width: 250
             },
             {
                 title: 'Token',

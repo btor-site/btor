@@ -9,6 +9,7 @@ const WebSocket = require('ws')
 const url = require('url')
 const cookie = require('cookie')
 const compression = require('compression')
+const helmet = require('helmet')
 const {
     nanoid
 } = require('nanoid')
@@ -66,6 +67,7 @@ const wss = new WebSocket.Server({
 })
 app.set('view engine', 'ejs')
 app.set('views', 'public')
+app.set('trust proxy', true)
 app.disable('x-powered-by')
 server.listen(process.env.PORT, () => {
     console.log(`Server started on port ${server.address().port}`)
@@ -74,6 +76,7 @@ server.listen(process.env.PORT, () => {
 app.use(express.json())
 app.use(cookieParser())
 app.use(compression())
+app.use(helmet())
 
 app.use('/api/users/new', userLimiter)
 app.use('/api/threads/new', threadLimiter)
@@ -190,7 +193,7 @@ app.get('/threads/:code', async (req, res) => {
             async function getNames() {
                 return new Promise(async (resolve) => {
                     for (let i = 0; i < users.length; i++) {
-                        const e = users[i];
+                        const e = users[i]
                         let username = await usersDB.findOne({id: e})
                         body.usernames[e] = username.username
                         if (i === users.length -1) resolve()
