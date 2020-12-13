@@ -76,7 +76,9 @@ server.listen(process.env.PORT, () => {
 app.use(express.json())
 app.use(cookieParser())
 app.use(compression())
-app.use(helmet())
+app.use(helmet({
+    contentSecurityPolicy: false
+}))
 
 app.use('/api/users/new', userLimiter)
 app.use('/api/threads/new', threadLimiter)
