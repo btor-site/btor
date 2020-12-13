@@ -1,35 +1,3 @@
-.navbar {
-    text-align: center;
-    height: 65px;
-}
-
-.navBtn {
-    color: #8B52FE;
-    border: none;
-    margin: 5px;
-    height: 40px;
-    border-radius: 0 !important;
-    font-size: 13px;
-    margin-top: 10px;
-}
-
-.navBtn:hover {
-    background-color: #F5F5F5;
-    border-bottom: 2px solid #6214ff;
-    color: #8B52FE;
-}
-
-.logo {
-    text-align: left;
-    position: absolute;
-    text-decoration: none;
-    color: #000;
-}
-
-hr {
-    margin: 0px !important;
-}
-
 input[type=submit] {
     background-color: #8B52FE !important;
     color: white !important;

@@ -79,6 +79,7 @@ app.use(compression())
 app.use(helmet({
     contentSecurityPolicy: false
 }))
+app.use('/assets', express.static('public/assets'))
 
 app.use('/api/users/new', userLimiter)
 app.use('/api/threads/new', threadLimiter)
@@ -226,10 +227,6 @@ app.get('/scripts/:page/index.js', async (req, res) => {
 
 app.get('/styles/:page/styles.css', async (req, res) => {
     res.sendFile(__dirname + `/public/${req.params.page}/styles.css`)
-})
-
-app.get('/assets/:path', async (req, res) => {
-    res.sendFile(__dirname + `/public/assets/${req.params.path}`)
 })
 
 // API

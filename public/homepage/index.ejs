@@ -10,21 +10,30 @@
     <link rel="stylesheet" href="/styles/homepage/styles.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/navbar/styles.css">
 </head>
 
 <body>
+
+    <!-- Navbars -->
     <div class="topbar">
         <div class="navbar">
-            <a href="/">
-                <h3 class="logo"><img src="/assets/logo.png" height="55"></h3>
-            </a>
-            <a href="/threads/new""><button class=" navBtn"><i class="fa fa-plus-square"></i> New thread</button></a>
-            <a href="/settings"><button class="navBtn"><i class="fa fa-user-check"></i> <%=username%></button></a>
-            <a href="/logout"><button class="navBtn"><i class="fa fa-user-times"></i> Sign out</button></a>
+            <a href="/"><img src="/assets/logo.png" height="55" class="logo"></a>
+            <a href="/threads/new"><button class="navBtn topBtn"><i class="fa fa-plus-square"></i> New thread</button></a>
+            <a href="/settings"><button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%=username%></button></a>
+            <a href="/logout"><button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button></a>
             <input type="search" placeholder="Search for threads" id="searchBar" class="searchBar">
         </div>
         <hr>
     </div>
+    <div class="bottombar navbar">
+        <hr>
+        <a href="/threads/new"><button class="navBtn bottomBtn"><i class="fa fa-plus-square"></i></button></a>
+        <a href="/settings"><button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%=username%></button></a>
+        <a href="/logout"><button class="navBtn bottomBtn"><i class="fa fa-user-times"></i></button></a>
+    </div>
+    <!-- Navbars -->
+
     <img class="banner" src="/assets/banner.png" width="1920">
     <div id="threads">
         <% threads.threads.forEach((thread)=>{%>

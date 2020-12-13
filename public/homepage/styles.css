@@ -1,43 +1,25 @@
-.navbar {
-    text-align: center;
-    height: 65px;
-}
-
-.navBtn {
-    color: #8B52FE;
-    border: none;
-    margin: 5px;
-    height: 40px;
-    border-radius: 0 !important;
-    font-size: 13px;
-    margin-top: 10px;
-}
-
-.navBtn:hover {
-    background-color: #F5F5F5;
-    border-bottom: 2px solid #6214ff;
-    color: #8B52FE;
-}
-
-.logo {
-    text-align: left;
-    position: absolute;
-    text-decoration: none;
-    color: #000;
-}
-
-hr {
-    margin: 0px !important;
-}
-
 .thread {
     background-color: #f2f2f2;
     padding: 10px;
     border-radius: 10px;
     margin: 20px auto;
-    width: 35%;
     text-decoration: none;
     border: 1px solid #d1d1d1;
+}
+
+@media (min-width: 750px) {
+    .thread {
+        width: 35%;
+    }
+}
+
+@media (max-width: 750px) {
+    .thread {
+        width: 70%;
+    }
+    .banner {
+        display: none;
+    }
 }
 
 .title {
@@ -50,19 +32,13 @@ hr {
     color: #6214ff
 }
 
-.topbar {
-    position: sticky;
-    top: 0;
-    background-color: white;
-}
-
 .banner {
     width: 100%;
 }
 
 .searchBar {
-    position: absolute;
-    right: 25px;
+    margin-right: 25px;
+    float: right;
     text-decoration: none;
     color: #000;
     margin-top: 10px;

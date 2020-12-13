@@ -10,21 +10,29 @@
     <link rel="stylesheet" href="/styles/thread/styles.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/navbar/styles.css">
 </head>
 
 <body>
+    
+    <!-- Navbars -->
     <div class="topbar">
         <div class="navbar">
-            <a href="/">
-                <h3 class="logo"><img src="/assets/logo.png" height="55"></h3>
-            </a>
-            <a href="/threads/new""><button class=" navBtn"><i class="fa fa-plus-square"></i> New thread</button></a>
-            <a href="/settings"><button class="navBtn"><i class="fa fa-user-check"></i> <%=username%></button></a>
-            <a href="/logout"><button class="navBtn"><i class="fa fa-user-times"></i> Sign out</button></a>
+            <a href="/"><img src="/assets/logo.png" height="55" class="logo"></a>
+            <a href="/threads/new"><button class="navBtn topBtn"><i class="fa fa-plus-square"></i> New thread</button></a>
+            <a href="/settings"><button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%=username%></button></a>
+            <a href="/logout"><button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button></a>
         </div>
         <hr>
     </div>
-    <hr>
+    <div class="bottombar navbar">
+        <hr>
+        <a href="/threads/new"><button class="navBtn bottomBtn"><i class="fa fa-plus-square"></i></button></a>
+        <a href="/settings"><button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%=username%></button></a>
+        <a href="/logout"><button class="navBtn bottomBtn"><i class="fa fa-user-times"></i></button></a>
+    </div>
+    <!-- Navbars -->
+
     <h5 id="title" class="title"><%=thread.title%></h5>
     <div id="comments">
         <% thread.comments.forEach((comment)=>{%>

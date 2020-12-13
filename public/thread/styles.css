@@ -1,35 +1,3 @@
-.navbar {
-    text-align: center;
-    height: 65px;
-}
-
-.navBtn {
-    color: #8B52FE;
-    border: none;
-    margin: 5px;
-    height: 40px;
-    border-radius: 0 !important;
-    font-size: 13px;
-    margin-top: 10px;
-}
-
-.navBtn:hover {
-    background-color: #F5F5F5;
-    border-bottom: 2px solid #6214ff;
-    color: #8B52FE;
-}
-
-.logo {
-    text-align: left;
-    position: absolute;
-    text-decoration: none;
-    color: #000;
-}
-
-hr {
-    margin: 0px !important;
-}
-
 .comment {
     background-color: #f2f2f2;
     box-shadow: 1px 10px 5px -10px rgba(0, 0, 0, 0.9);
@@ -79,11 +47,6 @@ textarea {
     text-align: center;
 }
 
-.topbar {
-    position: sticky;
-    top: 0;
-    background-color: white;
-}
 
 @media (min-width: 750px) {
     .comment {
