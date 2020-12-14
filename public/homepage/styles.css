@@ -75,3 +75,7 @@
     border: 1px solid #888888;
     background-color: #e7e7e7;
 }
+
+.threadLink:hover {
+    color: black;
+}

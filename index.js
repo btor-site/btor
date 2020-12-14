@@ -23,7 +23,7 @@ let adminPanelCodes = []
 const usersDB = db.get('users')
 const thread_overviewDB = db.get('thread_overview')
 const thread_commentsDB = db.get('thread_comments')
-db.then(() => {
+db.then(async () => {
     console.log('Connected to Database')
 })
 
@@ -59,7 +59,6 @@ const signinLimiter = rateLimit({
     }
 })
 
-
 const app = express()
 const server = http.createServer(app)
 const wss = new WebSocket.Server({
@@ -69,17 +68,17 @@ app.set('view engine', 'ejs')
 app.set('views', 'public')
 app.set('trust proxy', true)
 app.disable('x-powered-by')
-server.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, async () => {
     console.log(`Server started on port ${server.address().port}`)
 })
 
+app.use('/assets', express.static('public/assets'))
 app.use(express.json())
 app.use(cookieParser())
 app.use(compression())
 app.use(helmet({
     contentSecurityPolicy: false
 }))
-app.use('/assets', express.static('public/assets'))
 
 app.use('/api/users/new', userLimiter)
 app.use('/api/threads/new', threadLimiter)
@@ -121,12 +120,13 @@ app.get('/', async (req, res) => {
         body.threads.reverse()
         let users = [...new Set(body.threads.map(e => e.author))]
         async function getNames() {
-            return new Promise((resolve) => {
-                users.forEach(async (e, i) => {
+            return new Promise(async (resolve) => {
+                for (let i = 0; i < users.length; i++) {
+                    const e = users[i]
                     let username = await usersDB.findOne({id: e})
                     body.usernames[e] = username.username
                     if (i === users.length -1) resolve()
-                })
+                }
             })
         }
         if(users[0]) await getNames()
@@ -665,12 +665,12 @@ wss.on('connection', async (ws, req) => {
     const user = await usersDB.findOne({token: cookies.token})
     if(!user) return ws.terminate()
 
-    ws.on('message', (message) => {
+    ws.on('message', async (message) => {
         console.log(`Recieved message: ${message}`)
     })
 })
 
-function sendAll(id, content) {
+async function sendAll(id, content) {
     wss.clients.forEach(ws => {
         if(ws.id === id) ws.send(JSON.stringify(content))
     })

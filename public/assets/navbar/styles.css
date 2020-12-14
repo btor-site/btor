@@ -1,6 +1,7 @@
 .navbar {
     text-align: center;
     height: 65px;
+    width: 100%;
 }
 
 .navBtn {
@@ -22,7 +23,6 @@ body {
 .bottombar {
     bottom: 0;
     position: fixed;
-    width: 100%;
     left: 0;
     background-color: white;
 }
@@ -66,13 +66,14 @@ body {
     color: #000;
     margin-right: -55px;
     margin-top: 5px;
+    margin-left: 5px;
 }
 
 .topbar {
     position: fixed;
     top: 0;
+    left: 0;
     width: 100%;
-    overflow: hidden;
     background-color: white;
 }
 
