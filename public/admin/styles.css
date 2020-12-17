@@ -79,3 +79,7 @@ table {
         width: 50%;
     }
 }
+
+input, select {
+    margin-top: 3px;
+}

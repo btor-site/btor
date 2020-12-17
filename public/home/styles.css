@@ -24,6 +24,8 @@
     position: absolute;
     text-decoration: none;
     color: #000;
+    left: 5px;
+    top: 5px;
 }
 
 hr {

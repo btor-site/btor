@@ -77,7 +77,8 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(compression())
 app.use(helmet({
-    contentSecurityPolicy: false
+    contentSecurityPolicy: false,
+    referrerPolicy: false
 }))
 
 app.use('/api/users/new', userLimiter)
@@ -160,7 +161,7 @@ app.get('/signup', async (req, res) => {
     }
 })
 
-app.get('/signin', async (req, res) => {
+app.get(['/signin', '/login'], async (req, res) => {
     const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
     if (user) {
         res.redirect('/')
@@ -215,7 +216,7 @@ app.get('/threads/:code', async (req, res) => {
     }
 })
 
-app.get('/logout', async (req, res) => {
+app.get(['/logout', '/signout'], async (req, res) => {
     res.clearCookie('token')
     res.clearCookie('remember')
     res.redirect('/')
@@ -655,6 +656,7 @@ app.get('/admin', async (req, res) => {
 })
 
 wss.on('connection', async (ws, req) => {
+    ws.isAlive = true
     ws.id = url.parse(req.url, true).query.id
     let thread
     if(ws.id !== 'all') {
@@ -664,10 +666,32 @@ wss.on('connection', async (ws, req) => {
     const cookies = cookie.parse(req.headers.cookie)
     const user = await usersDB.findOne({token: cookies.token})
     if(!user) return ws.terminate()
+    ws.userName = user.username
 
     ws.on('message', async (message) => {
-        console.log(`Recieved message: ${message}`)
+        console.log(`Recieved message from ${ws.userName}: ${message}`)
     })
+
+    ws.on('pong', heartbeat)
+})
+
+function noop() {}
+
+function heartbeat() {
+    this.isAlive = true
+}
+
+const interval = setInterval(function ping() {
+    wss.clients.forEach(function each(ws) {
+        if (ws.isAlive === false) return ws.terminate()
+        
+        ws.isAlive = false
+        ws.ping(noop)
+    })
+}, 30000)
+
+wss.on('close', function close() {
+    clearInterval(interval)
 })
 
 async function sendAll(id, content) {
