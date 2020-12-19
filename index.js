@@ -1,5 +1,6 @@
 require('dotenv').config()
 const db = require('monk')(process.env.CONNECTION_STRING)
+const anchorme = require('anchorme').default
 const express = require('express')
 const bcrypt = require('bcrypt')
 const rateLimit = require('express-rate-limit')
@@ -204,6 +205,20 @@ app.get('/threads/:code', async (req, res) => {
                     }
                 })
             }
+
+            body.comments.map(comment => comment.comment = anchorme({
+                input: comment.comment,
+                options: {
+                    truncate: 40,
+                    attributes: (string) => {
+                        return {
+                            target: "_blank",
+                            title: string
+                        }
+                    }
+                }
+            }))
+
             if(users[0]) await getNames()
             res.render('thread/index', {username: user.username, thread: body})
         } else {

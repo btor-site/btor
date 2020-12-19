@@ -37,7 +37,7 @@
     <h5 id="title" class="title"><%=thread.title%></h5>
     <div id="comments">
         <% thread.comments.forEach((comment)=>{%>
-        <div class="comment"><h3 class="author"><%=thread.usernames[comment.author]%>:</h3><%=comment.comment%><p class="comment-id">ID: <%=comment.comment_id%></p></div>
+        <div class="comment"><h3 class="author"><%=thread.usernames[comment.author]%>:</h3><%-comment.comment%><p class="comment-id">ID: <%=comment.comment_id%></p></div>
         <%})%>
     </div>
     <br>
@@ -51,6 +51,7 @@
         </form>
     </div>
     <script src="/scripts/thread/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchorme/2.1.2/anchorme.min.js"></script>
 </body>
 
 </html>

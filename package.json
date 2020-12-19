@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "anchorme": "^2.1.2",
     "bcrypt": "^5.0.0",
     "compression": "^1.7.4",
     "cookie": "^0.4.1",

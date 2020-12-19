@@ -63,5 +63,20 @@ async function loadComment(comment) {
     }
     await cache()
 
-    commentsField.innerHTML += `<div class="comment"><h3 class="author">${userCache[comment.author]}:</h3>${comment.comment}<p class="comment-id">ID: ${comment.comment_id}</p></div>`
+    comment.comment = anchorme({
+        input: comment.comment,
+        options: {
+            truncate: 40,
+            attributes: (string) => {
+                return {
+                    target: "_blank",
+                    title: string
+                }
+            }
+        }
+    })
+
+    let input = `<div class="comment"><h3 class="author">${userCache[comment.author]}:</h3>${comment.comment}<p class="comment-id">ID: ${comment.comment_id}</p></div>`
+
+    commentsField.innerHTML += input
 }
