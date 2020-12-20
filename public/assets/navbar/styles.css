@@ -25,6 +25,7 @@ body {
     position: fixed;
     left: 0;
     background-color: white;
+    border-top: 1px solid #d1d1d1;
 }
 
 @media (min-width: 950px) {
@@ -35,7 +36,7 @@ body {
 
 @media (min-width: 750px) {
     .bottombar {
-        display: none;
+        display: none !important;
     }
 }
 
@@ -49,8 +50,9 @@ body {
 }
 
 .bottomBtn {
-    padding-right:35px !important;
-    padding-left: 35px !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+    width: 100%;
 }
 
 .navBtn:hover {
@@ -79,4 +81,9 @@ body {
 
 hr {
     margin: 0px !important;
+}
+
+.basic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 }
