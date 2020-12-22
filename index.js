@@ -89,9 +89,21 @@ app.use('/api/threads/new', threadLimiter)
 app.use('/api/threads/:code/comments/new', commentLimiter)
 app.use('/api/users/signin', signinLimiter)
 
+// CSS and JS
+app.get('/scripts/:page/index.js', async (req, res) => {
+    res.sendFile(__dirname + `/public/${req.params.page}/index.js`)
+})
+
+app.get('/styles/:page/styles.css', async (req, res) => {
+    res.sendFile(__dirname + `/public/${req.params.page}/styles.css`)
+})
+
 var cookieChecker = async function (req, res, next) {
-    const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
-    if (user) {
+    if(req.cookies.token) {
+        req.user = await usersDB.findOne({token: req.cookies.token})
+    }
+
+    if (req.user) {
         if (req.cookies.remember) {
             res.cookie('token', req.cookies.token, {
                 httpOnly: true,
@@ -115,26 +127,16 @@ app.use(cookieChecker)
 // Pages
 
 app.get('/', async (req, res) => {
-    const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
-    if (user) {
+    if (req.user) {
         let body = {
-            threads: await thread_overviewDB.find(),
-            usernames: {}
+            threads: await thread_overviewDB.find()
         }
         body.threads.reverse()
         let users = [...new Set(body.threads.map(e => e.author))]
-        async function getNames() {
-            return new Promise(async (resolve) => {
-                for (let i = 0; i < users.length; i++) {
-                    const e = users[i]
-                    let username = await usersDB.findOne({id: e})
-                    body.usernames[e] = username.username
-                    if (i === users.length -1) resolve()
-                }
-            })
-        }
-        if(users[0]) await getNames()
-        res.render('homepage/index', {username: user.username, threads: body})
+        users = await usersDB.find({id: {$in: users}}, {projection: {username: 1, id: 1}})
+        users = Object.fromEntries(users.map(v=>[v.id, v.username]))
+        body['usernames'] = users
+        res.render('homepage/index', {username: req.user.username, threads: body})
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
@@ -143,9 +145,8 @@ app.get('/', async (req, res) => {
 })
 
 app.get('/settings', async (req, res) => {
-    const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
-    if (user) {
-        res.render('settings/index', user)
+    if (req.user) {
+        res.render('settings/index', {username: req.user.username})
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
@@ -154,8 +155,7 @@ app.get('/settings', async (req, res) => {
 })
 
 app.get('/signup', async (req, res) => {
-    const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
-    if (user) {
+    if (req.user) {
         res.redirect('/')
     } else {
         res.clearCookie('token')
@@ -165,8 +165,7 @@ app.get('/signup', async (req, res) => {
 })
 
 app.get(['/signin', '/login'], async (req, res) => {
-    const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
-    if (user) {
+    if (req.user) {
         res.redirect('/')
     } else {
         res.clearCookie('token')
@@ -176,9 +175,8 @@ app.get(['/signin', '/login'], async (req, res) => {
 })
 
 app.get('/threads/new', async (req, res) => {
-    const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
-    if (user) {
-        res.render('newthread/index', user)
+    if (req.user) {
+        res.render('newthread/index', {username: req.user.username})
     } else {
         res.clearCookie('token')
         res.clearCookie('remember')
@@ -187,26 +185,17 @@ app.get('/threads/new', async (req, res) => {
 })
 
 app.get('/threads/:code', async (req, res) => {
-    const user = await usersDB.findOne({token: req.cookies.token}, {projection: {username: 1}})
-    const thread = await thread_overviewDB.findOne({id: req.params.code})
-    if (user) {
+    if (req.user) {
+        const thread = await thread_overviewDB.findOne({id: req.params.code})
         if(thread) {
             let body = {
                 title: thread.title,
-                comments: await thread_commentsDB.find({id: req.params.code}, {projection: {author: 1, comment: 1, comment_id: 1}}),
-                usernames: {}
+                comments: await thread_commentsDB.find({id: req.params.code}, {projection: {author: 1, comment: 1, comment_id: 1}})
             }
             let users = [...new Set(body.comments.map(e => e.author))]
-            async function getNames() {
-                return new Promise(async (resolve) => {
-                    for (let i = 0; i < users.length; i++) {
-                        const e = users[i]
-                        let username = await usersDB.findOne({id: e})
-                        body.usernames[e] = username.username
-                        if (i === users.length -1) resolve()
-                    }
-                })
-            }
+            users = await usersDB.find({id: {$in: users}}, {projection: {username: 1, id: 1}})
+            users = Object.fromEntries(users.map(v=>[v.id, v.username]))
+            body['usernames'] = users
 
             body.comments.map(comment => comment.comment = anchorme({
                 input: comment.comment,
@@ -221,8 +210,7 @@ app.get('/threads/:code', async (req, res) => {
                 }
             }))
 
-            if(users[0]) await getNames()
-            res.render('thread/index', {username: user.username, thread: body})
+            res.render('thread/index', {username: req.user.username, thread: body})
         } else {
             res.redirect('/')
         }
@@ -237,14 +225,6 @@ app.get(['/logout', '/signout'], async (req, res) => {
     res.clearCookie('token')
     res.clearCookie('remember')
     res.redirect('/')
-})
-
-app.get('/scripts/:page/index.js', async (req, res) => {
-    res.sendFile(__dirname + `/public/${req.params.page}/index.js`)
-})
-
-app.get('/styles/:page/styles.css', async (req, res) => {
-    res.sendFile(__dirname + `/public/${req.params.page}/styles.css`)
 })
 
 // API
@@ -297,11 +277,11 @@ app.post('/api/users/signin', async (req, res) => {
     if (!req.body.username || !req.body.password) return res.status(400).json({
         message: req.body.username ? req.body.password ? 'An unexpected error occured, please try again later' : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
     })
-    if (!await usersDB.findOne({username: req.body.username})) return res.status(404).json({
+    let user = await usersDB.findOne({username: req.body.username})
+    if (!user) return res.status(404).json({
         message: 'User was not found'
     })
 
-    const user = await usersDB.findOne({username: req.body.username})
     bcrypt.compare(req.body.password, user.password, async function (error, response) {
         if (response) {
             if (req.body.remember) {
@@ -335,7 +315,7 @@ app.post('/api/users/update/name', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
     if (!req.body.new) return res.status(400).json({
@@ -353,15 +333,14 @@ app.post('/api/users/update/password', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
     if (!req.body.oldPassword || !req.body.password) return res.status(400).json({
         message: req.body.oldPassword ? req.body.password ? 'An unexpected error occured, please try again later' : 'Password is a required field' : req.body.password ? 'OldPassword is a required field' : 'OldPassword and password are both required fields'
     })
 
-    const user = await usersDB.findOne({token: req.cookies.token})
-    bcrypt.compare(req.body.oldPassword, user.password, async function (error, response) {
+    bcrypt.compare(req.body.oldPassword, req.user.password, async function (error, response) {
         if (response) {
             bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
                 await usersDB.update({token: req.cookies.token}, {$set: {password: hash}})
@@ -382,21 +361,22 @@ app.post('/api/users/me/delete', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
     if (!req.body.username || !req.body.password) return res.status(400).json({
         message: req.body.username ? req.body.password ? 'An unexpected error occured, please try again later' : 'Password is a required field' : req.body.password ? 'Username is a required field' : 'Username and password are both required fields'
     })
+    if (req.body.username !== req.user.username) return res.status(403).json({
+        message: 'Username is not correct'
+    })
 
-    const user = await usersDB.findOne({username: req.body.username})
-    bcrypt.compare(req.body.password, user.password, async function (error, response) {
+    bcrypt.compare(req.body.password, req.user.password, async function (error, response) {
         if (response) {
-            let user = await usersDB.findOne({token: req.cookies.token}, {projection: {id: 1}})
-            await usersDB.remove({id: user.id})
-            let threads = await thread_overviewDB.find({author: user.id})
-            await thread_overviewDB.remove({author: user.id})
-            await thread_commentsDB.remove({author: user.id})
+            await usersDB.remove({id: req.user.id})
+            let threads = await thread_overviewDB.find({author: req.user.id})
+            await thread_overviewDB.remove({author: req.user.id})
+            await thread_commentsDB.remove({author: req.user.id})
             threads.forEach(async (thread) => {
                 await thread_commentsDB.remove({id: thread.id})
             })
@@ -419,7 +399,7 @@ app.get('/api/users/:id', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
 
@@ -430,7 +410,7 @@ app.get('/api/threads/all', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
 
@@ -442,7 +422,7 @@ app.post('/api/threads/new', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
     if (!req.body.message || !req.body.title) return res.status(400).json({
@@ -450,16 +430,15 @@ app.post('/api/threads/new', async (req, res) => {
     })
 
     let code = nanoid(10)
-    let user = await usersDB.findOne({token: req.cookies.token}, {projection: {id: 1}})
 
     while (await thread_overviewDB.findOne({id: code}) && await thread_commentsDB.findOne({id: code})) {
         code = nanoid(10)
     }
 
-    sendAll('all', {id: code, title: req.body.title, author: user.id})
+    sendAll('all', {id: code, title: req.body.title, author: req.user.id})
 
-    await thread_overviewDB.insert({id: code, title: req.body.title, author: user.id})
-    await thread_commentsDB.insert({id: code, comment_id: code, author: user.id, comment: req.body.message})
+    await thread_overviewDB.insert({id: code, title: req.body.title, author: req.user.id})
+    await thread_commentsDB.insert({id: code, comment_id: code, author: req.user.id, comment: req.body.message})
     res.json({
         message: 'Thread was created',
         code: code,
@@ -471,7 +450,7 @@ app.post('/api/threads/:code/comments/new', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
     if (!req.body.message) return res.status(400).json({
@@ -479,15 +458,14 @@ app.post('/api/threads/:code/comments/new', async (req, res) => {
     })
 
     let code = nanoid(10)
-    let user = await usersDB.findOne({token: req.cookies.token}, {projection: {id: 1}})
 
     while (await thread_commentsDB.findOne({id: code})) {
         code = nanoid(10)
     }
 
-    await thread_commentsDB.insert({id: req.params.code, comment_id: code, author: user.id, comment: req.body.message})
+    await thread_commentsDB.insert({id: req.params.code, comment_id: code, author: req.user.id, comment: req.body.message})
 
-    sendAll(req.params.code, {id: req.params.code, comment_id: code, author: user.id, comment: req.body.message})
+    sendAll(req.params.code, {id: req.params.code, comment_id: code, author: req.user.id, comment: req.body.message})
     
     res.json({
         message: 'Added comment',
@@ -499,7 +477,7 @@ app.get('/api/threads/:code/comments', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
     if (!await thread_overviewDB.findOne({id: req.params.code})) return res.status(404).json({
@@ -518,7 +496,7 @@ app.post('/api/threads/search', async (req, res) => {
     if (!req.cookies.token) return res.status(401).json({
         message: 'Valid token cookie is required'
     })
-    if (!await usersDB.findOne({token: req.cookies.token})) return res.status(401).json({
+    if (!req.user) return res.status(401).json({
         message: 'The token is not right'
     })
     if (!req.body.query) return res.status(400).json({
