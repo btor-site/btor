@@ -74,6 +74,8 @@ server.listen(process.env.PORT, async () => {
 })
 
 app.use('/assets', express.static('public/assets'))
+app.use('/', express.static('public/assets/home'))
+app.use('/pwa-icons', express.static('public/assets/pwa-icons'))
 app.use(express.json())
 app.use(cookieParser())
 app.use(compression())
