@@ -11,12 +11,10 @@ const url = require('url')
 const cookie = require('cookie')
 const compression = require('compression')
 const helmet = require('helmet')
-const {
-    nanoid
-} = require('nanoid')
-const randtoken = require('rand-token').generator({
-    chars: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ=.-_'
-})
+const FlakeId = require('flake-idgen')
+const intformat = require('biguint-format')
+const {nanoid} = require('nanoid')
+
 
 const saltRounds = 10
 let adminPanelCodes = []
@@ -24,6 +22,8 @@ let adminPanelCodes = []
 const usersDB = db.get('users')
 const thread_overviewDB = db.get('thread_overview')
 const thread_commentsDB = db.get('thread_comments')
+const idGen = new FlakeId({epoch: 1577836800000})
+
 db.then(async () => {
     console.log('Connected to Database')
 })
@@ -237,16 +237,8 @@ app.post('/api/users/new', async (req, res) => {
         message: 'A user with that name already exists'
     })
 
-    let token = randtoken.generate(60)
-    let id = nanoid(20)
-
-    while (await usersDB.findOne({token: token})) {
-        token = randtoken.generate(60)
-    }
-
-    while (await usersDB.findOne({id: id})) {
-        id = nanoid(20)
-    }
+    let id = intformat(idGen.next(), 'dec')
+    let token = `${Buffer.from(id).toString('base64')}.${nanoid(40)}`
 
     bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
         await usersDB.insert({username: req.body.username, id: id, token: token, password: hash})
@@ -429,11 +421,7 @@ app.post('/api/threads/new', async (req, res) => {
         message: req.body.message ? req.body.title ? 'An unexpected error occured, please try again later' : 'Title is a required field' : req.body.title ? 'Message is a required field' : 'Message and title are both required fields'
     })
 
-    let code = nanoid(10)
-
-    while (await thread_overviewDB.findOne({id: code}) && await thread_commentsDB.findOne({id: code})) {
-        code = nanoid(10)
-    }
+    let code = intformat(idGen.next(), 'dec')
 
     sendAll('all', {id: code, title: req.body.title, author: req.user.id})
 
@@ -457,11 +445,7 @@ app.post('/api/threads/:code/comments/new', async (req, res) => {
         message: 'Message is a required field'
     })
 
-    let code = nanoid(10)
-
-    while (await thread_commentsDB.findOne({id: code})) {
-        code = nanoid(10)
-    }
+    let code = intformat(idGen.next(), 'dec')
 
     await thread_commentsDB.insert({id: req.params.code, comment_id: code, author: req.user.id, comment: req.body.message})
 
@@ -509,20 +493,6 @@ app.post('/api/threads/search', async (req, res) => {
 })
 
 // Admin
-
-app.delete('/api/admin/all', async (req, res) => {
-    if (req.headers.authorization !== process.env.ADMIN_PASSWORD) return res.status(401).json({
-        message: 'Admin password not correct'
-    })
-
-    await usersDB.remove()
-    await thread_commentsDB.remove()
-    await thread_overviewDB.remove()
-
-    res.json({
-        message: 'Deleted everything'
-    })
-})
 
 app.post('/api/admin/edit/:object/:id', async (req, res) => {
     if (req.headers.authorization !== process.env.ADMIN_PASSWORD) return res.status(401).json({
