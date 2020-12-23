@@ -18,8 +18,8 @@ searchBar.addEventListener('input', (event) => {
         .then(response => response.json())
         .then(result => {
             threadsField.innerHTML = ''
-            result.forEach(thread => {
-                threadsField.innerHTML += `<div class="thread"><a class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</a> by ${userCache[thread.author]}</div>`
+            result.threads.forEach(thread => {
+                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${result.usernames[thread.author]}</div></a>`
             })
         })
 })
@@ -59,4 +59,15 @@ async function loadThread(thread) {
     await cache()
 
     threadsField.innerHTML = `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>` + threadsField.innerHTML
+}
+
+async function loadThreads() {
+    fetch('/api/threads/all')
+        .then(response => response.json())
+        .then(result => {
+            threadsField.innerHTML = ''
+            result.threads.forEach(thread => {
+                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${result.usernames[thread.author]}</div></a>`
+            })
+        })
 }

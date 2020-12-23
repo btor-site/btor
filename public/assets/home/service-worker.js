@@ -1,5 +1,7 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.0.2/workbox-sw.js');
 
+workbox.setConfig({ debug: false });
+
 const CACHE_NAME = 'offline-html';
 const FALLBACK_HTML_URL = '/offline.html';
 self.addEventListener('install', async (event) => {

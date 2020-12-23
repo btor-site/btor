@@ -406,8 +406,16 @@ app.get('/api/threads/all', async (req, res) => {
         message: 'The token is not right'
     })
 
-    const threads = await thread_overviewDB.find()
-    res.json(threads.reverse())
+    let body = {
+        threads: await thread_overviewDB.find()
+    }
+    body.threads.reverse()
+    let users = [...new Set(body.threads.map(e => e.author))]
+    users = await usersDB.find({id: {$in: users}}, {projection: {username: 1, id: 1}})
+    users = Object.fromEntries(users.map(v=>[v.id, v.username]))
+    body['usernames'] = users
+
+    res.json(body)
 })
 
 app.post('/api/threads/new', async (req, res) => {
@@ -450,7 +458,7 @@ app.post('/api/threads/:code/comments/new', async (req, res) => {
     await thread_commentsDB.insert({id: req.params.code, comment_id: code, author: req.user.id, comment: req.body.message})
 
     sendAll(req.params.code, {id: req.params.code, comment_id: code, author: req.user.id, comment: req.body.message})
-    
+
     res.json({
         message: 'Added comment',
         success: true
@@ -487,9 +495,17 @@ app.post('/api/threads/search', async (req, res) => {
         message: 'You need to include the search query'
     })
     
-    const threads = await thread_overviewDB.find()
+    let threads = await thread_overviewDB.find()
+    threads = threads.reverse().filter(thread => thread.title.toLowerCase().includes(req.body.query.toLowerCase()))
+    let body = {
+        threads: threads
+    }
+    let users = [...new Set(body.threads.map(e => e.author))]
+    users = await usersDB.find({id: {$in: users}}, {projection: {username: 1, id: 1}})
+    users = Object.fromEntries(users.map(v=>[v.id, v.username]))
+    body['usernames'] = users
 
-    res.json(threads.reverse().filter(thread => thread.title.toLowerCase().includes(req.body.query.toLowerCase())))
+    res.json(body)
 })
 
 // Admin
@@ -649,7 +665,7 @@ function heartbeat() {
 const interval = setInterval(function ping() {
     wss.clients.forEach(function each(ws) {
         if (ws.isAlive === false) return ws.terminate()
-        
+
         ws.isAlive = false
         ws.ping(noop)
     })
