@@ -14,7 +14,7 @@ const helmet = require('helmet')
 const FlakeId = require('flake-idgen')
 const intformat = require('biguint-format')
 const {nanoid} = require('nanoid')
-
+const xss = require('xss')
 
 const saltRounds = 10
 let adminPanelCodes = []
@@ -241,7 +241,7 @@ app.post('/api/users/new', async (req, res) => {
     let token = `${Buffer.from(id).toString('base64')}.${nanoid(40)}`
 
     bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
-        await usersDB.insert({username: req.body.username, id: id, token: token, password: hash})
+        await usersDB.insert({username: xss(req.body.username), id: id, token: token, password: hash})
         if (req.body.remember) {
             res.cookie('token', token, {
                 httpOnly: true,
@@ -314,7 +314,7 @@ app.post('/api/users/update/name', async (req, res) => {
         message: 'New is a required field'
     })
 
-    await usersDB.update({token: req.cookies.token}, {$set: {username: req.body.new}})
+    await usersDB.update({token: req.cookies.token}, {$set: {username: xss(req.body.new)}})
     res.json({
         message: 'Username updated successfully',
         success: true
@@ -431,10 +431,10 @@ app.post('/api/threads/new', async (req, res) => {
 
     let code = intformat(idGen.next(), 'dec')
 
-    sendAll('all', {id: code, title: req.body.title, author: req.user.id})
+    sendAll('all', {id: code, title: xss(req.body.title), author: req.user.id})
 
-    await thread_overviewDB.insert({id: code, title: req.body.title, author: req.user.id})
-    await thread_commentsDB.insert({id: code, comment_id: code, author: req.user.id, comment: req.body.message})
+    await thread_overviewDB.insert({id: code, title: xss(req.body.title), author: xss(req.user.id)})
+    await thread_commentsDB.insert({id: code, comment_id: code, author: req.user.id, comment: xss(req.body.message)})
     res.json({
         message: 'Thread was created',
         code: code,
@@ -455,9 +455,9 @@ app.post('/api/threads/:code/comments/new', async (req, res) => {
 
     let code = intformat(idGen.next(), 'dec')
 
-    await thread_commentsDB.insert({id: req.params.code, comment_id: code, author: req.user.id, comment: req.body.message})
+    await thread_commentsDB.insert({id: req.params.code, comment_id: code, author: req.user.id, comment: xss(req.body.message)})
 
-    sendAll(req.params.code, {id: req.params.code, comment_id: code, author: req.user.id, comment: req.body.message})
+    sendAll(req.params.code, {id: req.params.code, comment_id: code, author: req.user.id, comment: xss(req.body.message)})
 
     res.json({
         message: 'Added comment',
@@ -520,7 +520,7 @@ app.post('/api/admin/edit/:object/:id', async (req, res) => {
 
     switch (req.params.object) {
         case 'user':
-            await usersDB.update({id: req.params.id}, {$set: {username: req.body.new}})
+            await usersDB.update({id: req.params.id}, {$set: {username: xss(req.body.new)}})
             res.json({
                 message: 'Username updated successfully',
                 success: true
@@ -528,7 +528,7 @@ app.post('/api/admin/edit/:object/:id', async (req, res) => {
             break;
 
         case 'thread':
-            await thread_overviewDB.update({id: req.params.id}, {$set: {title: req.body.new}})
+            await thread_overviewDB.update({id: req.params.id}, {$set: {title: xss(req.body.new)}})
             res.json({
                 message: 'Thread title updated successfully',
                 success: true
@@ -536,7 +536,7 @@ app.post('/api/admin/edit/:object/:id', async (req, res) => {
             break;
 
         case 'comment':
-            await thread_commentsDB.update({comment_id: req.params.id}, {$set: {comment: req.body.new}})
+            await thread_commentsDB.update({comment_id: req.params.id}, {$set: {comment: xss(req.body.new)}})
             res.json({
                 message: 'Comment updated successfully',
                 success: true

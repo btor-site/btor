@@ -1,7 +1,7 @@
 {
   "name": "btor",
   "version": "1.0.0",
-  "description": "",
+  "description": "BTOR - The communication platform of the future",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -26,7 +26,8 @@
     "helmet": "^4.2.0",
     "monk": "^7.3.2",
     "nanoid": "^3.1.20",
-    "ws": "^7.4.1"
+    "ws": "^7.4.1",
+    "xss": "^1.0.8"
   },
   "engines": {
     "node": "14.x"
