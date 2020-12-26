@@ -43,7 +43,7 @@
     <img class="banner" src="/assets/banner.png">
     <div id="threads">
         <% threads.threads.forEach((thread)=>{%>
-        <a href="/threads/<%=thread.id%>" class="threadLink"><div class="thread"><span class="title" href="/threads/<%=thread.id%>" title="<%=thread.title%>"><%=thread.title.substring(0, 35)%><%=thread.title.length > 35 ? '...' : ''%></span> by <%=threads.usernames[thread.author]%></div></a>
+        <a href="/threads/<%=thread.id%>" class="threadLink" id="<%=thread.id%>"><div class="thread"><span class="title" href="/threads/<%=thread.id%>" title="<%=thread.title%>"><%=thread.title.substring(0, 35)%><%=thread.title.length > 35 ? '...' : ''%></span> by <%=threads.usernames[thread.author]%></div></a>
         <%})%>
     </div>
     <script src="/scripts/homepage/index.js"></script>

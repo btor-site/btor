@@ -1,9 +1,11 @@
 const threadsField = document.getElementById('threads')
 const searchBar = document.getElementById('searchBar')
 let userCache = {}
+let queries = {}
 
 searchBar.addEventListener('input', (event) => {
     const query = event.target.value
+    if (queries[query]) return loadQuery(query)
     if (query.length < 1) return loadThreads()
     const body = {
         query
@@ -17,10 +19,15 @@ searchBar.addEventListener('input', (event) => {
         })
         .then(response => response.json())
         .then(result => {
+            queries[query] = result
             threadsField.innerHTML = ''
             result.threads.forEach(thread => {
-                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${result.usernames[thread.author]}</div></a>`
+                if(!userCache[thread.author]) userCache[thread.author] = result.usernames[thread.author]
+                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${result.usernames[thread.author]}</div></a>`
             })
+            setTimeout(() => {
+                queries[query] = null
+            }, 30000);
         })
 })
 
@@ -58,7 +65,7 @@ async function loadThread(thread) {
     }
     await cache()
 
-    threadsField.innerHTML = `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>` + threadsField.innerHTML
+    threadsField.innerHTML = `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>` + threadsField.innerHTML
 }
 
 async function loadThreads() {
@@ -67,7 +74,16 @@ async function loadThreads() {
         .then(result => {
             threadsField.innerHTML = ''
             result.threads.forEach(thread => {
-                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${result.usernames[thread.author]}</div></a>`
+                if(!userCache[thread.author]) userCache[thread.author] = result.usernames[thread.author]
+                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${result.usernames[thread.author]}</div></a>`
             })
         })
+}
+
+async function loadQuery(query) {
+    threadsField.innerHTML = ''
+    queries[query].threads.forEach(thread => {
+        if(!userCache[thread.author]) userCache[thread.author] = queries[query].usernames[thread.author]
+        threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${queries[query].usernames[thread.author]}</div></a>`
+    })
 }
