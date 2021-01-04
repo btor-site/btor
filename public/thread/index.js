@@ -29,20 +29,43 @@ form.addEventListener('submit', (event) => {
         })
 })
 
-const url = `${window.location.origin.replace('http', 'ws')}/threads?id=${window.location.pathname.split('/')[2]}`
-const connection = new WebSocket(url)
+const socket = io()
 
-connection.onopen = () => {
-    console.log('Connected')
-}
+socket.on('connect', () => {
+    let styles = [
+        `background: #229954`,
+        `border-radius: 0.5em`,
+        `color: white`,
+        `font-weight: bold`,
+        `padding: 2px 0.5em`,
+    ];
+    console.log('%cWebSocket', styles.join(';'), 'Connected')
+    socket.emit('join', window.location.pathname.split('/')[2])
+})
 
-connection.onerror = (error) => {
-    console.log(`WebSocket error: ${error}`)
-}
 
-connection.onmessage = (e) => {
-    loadComment(JSON.parse(e.data))
-}
+socket.on('message', (comment) => {
+    let styles = [
+        `background: #4982FF`,
+        `border-radius: 0.5em`,
+        `color: white`,
+        `font-weight: bold`,
+        `padding: 2px 0.5em`,
+    ];
+    console.log('%cWebSocket', styles.join(';'), 'Recieved message', comment)
+    loadComment(comment)
+})
+
+socket.on('disconnect', () => {
+    let styles = [
+        `background: #EB3941`,
+        `border-radius: 0.5em`,
+        `color: white`,
+        `font-weight: bold`,
+        `padding: 2px 0.5em`,
+    ];
+    console.log('%cWebSocket', styles.join(';'), 'Disonnected')
+})
 
 async function loadComment(comment) {
     function cache() {

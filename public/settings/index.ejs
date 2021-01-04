@@ -27,19 +27,19 @@
         <div class="navbar">
             <a href="/"><img src="/assets/logo.png" height="55" class="logo"></a>
             <a href="/threads/new"><button class="navBtn topBtn"><i class="fa fa-plus-square"></i> New thread</button></a>
-            <a href="/settings"><button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%=username%></button></a>
+            <a href="/settings"><button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%-username%></button></a>
             <a href="/logout"><button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button></a>
         </div>
         <hr>
     </div>
     <section class="basic-grid bottombar navbar">
         <a href="/threads/new" class="card"><button class="navBtn bottomBtn"><i class="fa fa-plus-square"></i></button></a>
-        <a href="/settings" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%=username%></button></a>
+        <a href="/settings" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%-username%></button></a>
         <a href="/logout" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-times"></i></button></a>
     </section>
     <!-- Navbars -->
 
-    <h1 class="title">User settings - <%=username%></h1>
+    <h1 class="title">User settings - <%-username%></h1>
     <br>
     <div class="page1">
         <div class="row">

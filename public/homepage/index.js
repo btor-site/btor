@@ -23,7 +23,7 @@ searchBar.addEventListener('input', (event) => {
             threadsField.innerHTML = ''
             result.threads.forEach(thread => {
                 if(!userCache[thread.author]) userCache[thread.author] = result.usernames[thread.author]
-                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${result.usernames[thread.author]}</div></a>`
+                threadsField.innerHTML += renderThread(thread)
             })
             setTimeout(() => {
                 queries[query] = null
@@ -31,20 +31,43 @@ searchBar.addEventListener('input', (event) => {
         })
 })
 
-const url = `${window.location.origin.replace('http', 'ws')}/threads?id=all`
-const connection = new WebSocket(url)
+const socket = io()
 
-connection.onopen = () => {
-    console.log('Connected')
-}
+socket.on('connect', () => {
+    let styles = [
+        `background: #229954`,
+        `border-radius: 0.5em`,
+        `color: white`,
+        `font-weight: bold`,
+        `padding: 2px 0.5em`,
+    ];
+    console.log('%cWebSocket', styles.join(';'), 'Connected')
+    socket.emit('join', 'homepage')
+})
 
-connection.onerror = (error) => {
-    console.log(`WebSocket error: ${error}`)
-}
 
-connection.onmessage = (e) => {
-    loadThread(JSON.parse(e.data))
-}
+socket.on('message', (thread) => {
+    let styles = [
+        `background: #4982FF`,
+        `border-radius: 0.5em`,
+        `color: white`,
+        `font-weight: bold`,
+        `padding: 2px 0.5em`,
+    ];
+    console.log('%cWebSocket', styles.join(';'), 'Recieved message', thread)
+    loadThread(thread)
+})
+
+socket.on('disconnect', () => {
+    let styles = [
+        `background: #EB3941`,
+        `border-radius: 0.5em`,
+        `color: white`,
+        `font-weight: bold`,
+        `padding: 2px 0.5em`,
+    ];
+    console.log('%cWebSocket', styles.join(';'), 'Disonnected')
+})
 
 async function loadThread(thread) {
     function cache() {
@@ -65,7 +88,7 @@ async function loadThread(thread) {
     }
     await cache()
 
-    threadsField.innerHTML = `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>` + threadsField.innerHTML
+    threadsField.innerHTML = renderThread(thread) + threadsField.innerHTML
 }
 
 async function loadThreads() {
@@ -75,7 +98,7 @@ async function loadThreads() {
             threadsField.innerHTML = ''
             result.threads.forEach(thread => {
                 if(!userCache[thread.author]) userCache[thread.author] = result.usernames[thread.author]
-                threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${result.usernames[thread.author]}</div></a>`
+                threadsField.innerHTML += renderThread(thread)
             })
         })
 }
@@ -84,6 +107,10 @@ async function loadQuery(query) {
     threadsField.innerHTML = ''
     queries[query].threads.forEach(thread => {
         if(!userCache[thread.author]) userCache[thread.author] = queries[query].usernames[thread.author]
-        threadsField.innerHTML += `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 35)}${thread.title.length > 35 ? '...' : ''}</span> by ${queries[query].usernames[thread.author]}</div></a>`
+        threadsField.innerHTML += renderThread(thread)
     })
+}
+
+function renderThread(thread) {
+    return `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 50)}${thread.title.length > 50 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>`
 }

@@ -27,22 +27,22 @@
         <div class="navbar">
             <a href="/"><img src="/assets/logo.png" height="55" class="logo"></a>
             <a href="/threads/new"><button class="navBtn topBtn"><i class="fa fa-plus-square"></i> New thread</button></a>
-            <a href="/settings"><button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%=username%></button></a>
+            <a href="/settings"><button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%-username%></button></a>
             <a href="/logout"><button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button></a>
         </div>
         <hr>
     </div>
     <section class="basic-grid bottombar navbar">
         <a href="/threads/new" class="card"><button class="navBtn bottomBtn"><i class="fa fa-plus-square"></i></button></a>
-        <a href="/settings" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%=username%></button></a>
+        <a href="/settings" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%-username%></button></a>
         <a href="/logout" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-times"></i></button></a>
     </section>
     <!-- Navbars -->
 
-    <h5 id="title" class="title"><%=thread.title%></h5>
+    <h5 id="title" class="title"><%-thread.title%></h5>
     <div id="comments">
         <% thread.comments.forEach((comment)=>{%>
-        <div class="comment"><h3 class="author"><%=thread.usernames[comment.author]%>:</h3><%-comment.comment%><p class="comment-id">ID: <%=comment.comment_id%></p></div>
+        <div class="comment"><h3 class="author"><%-thread.usernames[comment.author]%>:</h3><%-comment.comment%><p class="comment-id">ID: <%=comment.comment_id%></p></div>
         <%})%>
     </div>
     <br>
@@ -55,6 +55,7 @@
             <input type="submit" value="Comment">
         </form>
     </div>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/scripts/thread/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchorme/2.1.2/anchorme.min.js"></script>
     <script>

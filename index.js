@@ -6,8 +6,6 @@ const bcrypt = require('bcrypt')
 const rateLimit = require('express-rate-limit')
 const cookieParser = require('cookie-parser')
 const http = require('http')
-const WebSocket = require('ws')
-const url = require('url')
 const cookie = require('cookie')
 const compression = require('compression')
 const helmet = require('helmet')
@@ -15,6 +13,7 @@ const FlakeId = require('flake-idgen')
 const intformat = require('biguint-format')
 const {nanoid} = require('nanoid')
 const xss = require('xss')
+const socketio = require('socket.io')
 
 const saltRounds = 10
 let adminPanelCodes = []
@@ -62,9 +61,7 @@ const signinLimiter = rateLimit({
 
 const app = express()
 const server = http.createServer(app)
-const wss = new WebSocket.Server({
-    server
-})
+const io = socketio(server)
 app.set('view engine', 'ejs')
 app.set('views', 'public')
 app.set('trust proxy', true)
@@ -431,7 +428,7 @@ app.post('/api/threads/new', async (req, res) => {
 
     let code = intformat(idGen.next(), 'dec')
 
-    sendAll('all', {id: code, title: xss(req.body.title), author: req.user.id})
+    io.to('homepage').emit('message', {id: code, title: xss(req.body.title), author: req.user.id})
 
     await thread_overviewDB.insert({id: code, title: xss(req.body.title), author: xss(req.user.id)})
     await thread_commentsDB.insert({id: code, comment_id: code, author: req.user.id, comment: xss(req.body.message)})
@@ -457,7 +454,7 @@ app.post('/api/threads/:code/comments/new', async (req, res) => {
 
     await thread_commentsDB.insert({id: req.params.code, comment_id: code, author: req.user.id, comment: xss(req.body.message)})
 
-    sendAll(req.params.code, {id: req.params.code, comment_id: code, author: req.user.id, comment: xss(req.body.message)})
+    io.to(req.params.code).emit('message', {id: req.params.code, comment_id: code, author: req.user.id, comment: xss(req.body.message)})
 
     res.json({
         message: 'Added comment',
@@ -636,47 +633,17 @@ app.get('/admin', async (req, res) => {
     res.render('adminsignin/index')
 })
 
-wss.on('connection', async (ws, req) => {
-    ws.isAlive = true
-    ws.id = url.parse(req.url, true).query.id
-    let thread
-    if(ws.id !== 'all') {
-        thread = await thread_overviewDB.findOne({id: ws.id})
-        if(!thread) return ws.terminate()
-    }
-    const cookies = cookie.parse(req.headers.cookie)
+io.on('connection', async (socket) => {
+    const cookies = cookie.parse(socket.request.headers.cookie)
     const user = await usersDB.findOne({token: cookies.token})
-    if(!user) return ws.terminate()
-    ws.userName = user.username
+    if(!user) return socket.disconnect(true)
 
-    ws.on('message', async (message) => {
-        console.log(`Recieved message from ${ws.userName}: ${message}`)
+    socket.on('join', async (id) => {
+        let thread
+        if(id !== 'homepage') {
+            thread = await thread_overviewDB.findOne(({id: id}))
+            if(!thread) return socket.disconnect(true)
+        }
+        socket.join(id)
     })
-
-    ws.on('pong', heartbeat)
 })
-
-function noop() {}
-
-function heartbeat() {
-    this.isAlive = true
-}
-
-const interval = setInterval(function ping() {
-    wss.clients.forEach(function each(ws) {
-        if (ws.isAlive === false) return ws.terminate()
-
-        ws.isAlive = false
-        ws.ping(noop)
-    })
-}, 30000)
-
-wss.on('close', function close() {
-    clearInterval(interval)
-})
-
-async function sendAll(id, content) {
-    wss.clients.forEach(ws => {
-        if(ws.id === id) ws.send(JSON.stringify(content))
-    })
-}
