@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "anchorme": "^2.1.2",
     "bcrypt": "^5.0.0",
     "biguint-format": "^1.0.2",
     "compression": "^1.7.4",
@@ -26,8 +25,7 @@
     "helmet": "^4.2.0",
     "monk": "^7.3.2",
     "nanoid": "^3.1.20",
-    "socket.io": "^3.0.4",
-    "xss": "^1.0.8"
+    "socket.io": "^3.0.4"
   },
   "engines": {
     "node": "14.x"

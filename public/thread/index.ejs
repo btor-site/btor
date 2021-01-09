@@ -21,28 +21,73 @@
 </head>
 
 <body>
-    
+
     <!-- Navbars -->
     <div class="topbar">
         <div class="navbar">
             <a href="/"><img src="/assets/logo.png" height="55" class="logo"></a>
-            <a href="/threads/new"><button class="navBtn topBtn"><i class="fa fa-plus-square"></i> New thread</button></a>
-            <a href="/settings"><button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%-username%></button></a>
-            <a href="/logout"><button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button></a>
+            <a href="/threads/new" class="btnlink">
+                <button class="navBtn topBtn"><i class="fa fa-plus-square"></i> New thread</button>
+            </a>
+            <a href="/settings" class="btnlink">
+                <button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%=user.username%></button>
+            </a>
+            <a href="/logout" class="btnlink">
+                <button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button>
+            </a>
         </div>
         <hr>
     </div>
     <section class="basic-grid bottombar navbar">
-        <a href="/threads/new" class="card"><button class="navBtn bottomBtn"><i class="fa fa-plus-square"></i></button></a>
-        <a href="/settings" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%-username%></button></a>
-        <a href="/logout" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-times"></i></button></a>
+        <a href="/threads/new" class="card btnlink">
+            <button class="navBtn bottomBtn"><i class="fa fa-plus-square"></i></button>
+        </a>
+        <a href="/settings" class="card btnlink">
+            <button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%=user.username%></button>
+        </a>
+        <a href="/logout" class="card btnlink">
+            <button class="navBtn bottomBtn"><i class="fa fa-user-times"></i></button>
+        </a>
     </section>
     <!-- Navbars -->
 
-    <h5 id="title" class="title"><%-thread.title%></h5>
+    <h5 id="title" class="title"><%=body.title%></h5>
     <div id="comments">
-        <% thread.comments.forEach((comment)=>{%>
-        <div class="comment"><h3 class="author"><%-thread.usernames[comment.author]%>:</h3><%-comment.comment%><p class="comment-id">ID: <%=comment.comment_id%></p></div>
+        <% body.comments.forEach((comment)=>{%>
+        <div class="comment" id="<%=comment.comment_id%>">
+            <div class="commentbox">
+                <b class="author">
+                    <%=body.users[comment.author]['username']%><%-body.users[comment.author].permission === 'admin' ? ' <i class="fa fa-shield-alt admin" title="Admin"></i>' : ''%>:
+                </b>
+                <br>
+                <div id="<%=comment.comment_id%>-text" class="comment_content">
+                    <%comment.comment.trim().split('\n').forEach((text)=>{%>
+                    <%  if(text.trim() !== '') { %>
+                    <div><%=text%></div>
+                    <% } else { %>
+                    <br>
+                    <% } %>
+                    <%})%>
+                </div>
+                <% if ((user.id === comment.author) || (user.permission === 'admin')) {%>
+                <div class="two-grid actionbuttons hidden" id="<%=comment.comment_id%>-editButtons">
+                    <button onclick="cancelEdit('<%=comment.comment_id%>')">Cancel</button>
+                    <button onclick="saveEdit('<%=comment.comment_id%>')">Save</button>
+                </div>
+                <% } %>
+                <p class="comment-id">ID: <%=comment.comment_id%></p>
+            </div>
+            <% if ((user.id === comment.author) || (user.permission === 'admin')) {%>
+            <div class="actions two-grid">
+                <button title="Edit" onclick="editComment('<%=comment.comment_id%>')">
+                    <i class="fa fa-pencil-alt"></i>
+                </button>
+                <button title="Delete" onclick="deleteComment('<%=comment.comment_id%>')">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+            <% } %>
+        </div>
         <%})%>
     </div>
     <br>
@@ -56,13 +101,18 @@
         </form>
     </div>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.9/linkify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-linkify/2.1.9/linkify-element.min.js"></script>
     <script src="/scripts/thread/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchorme/2.1.2/anchorme.min.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
             })
+        }
+        let user = {
+            id: '<%=user.id%>',
+            permission: '<%=user.permission%>'
         }
     </script>
 </body>

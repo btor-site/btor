@@ -2,6 +2,7 @@ const threadsField = document.getElementById('threads')
 const searchBar = document.getElementById('searchBar')
 let userCache = {}
 let queries = {}
+let editing = false
 
 searchBar.addEventListener('input', (event) => {
     const query = event.target.value
@@ -22,12 +23,12 @@ searchBar.addEventListener('input', (event) => {
             queries[query] = result
             threadsField.innerHTML = ''
             result.threads.forEach(thread => {
-                if(!userCache[thread.author]) userCache[thread.author] = result.usernames[thread.author]
-                threadsField.innerHTML += renderThread(thread)
+                if (!userCache[thread.author]) userCache[thread.author] = result.users[thread.author]
+                threadsField.appendChild(renderThread(thread))
             })
             setTimeout(() => {
                 queries[query] = null
-            }, 30000);
+            }, 30000)
         })
 })
 
@@ -40,7 +41,7 @@ socket.on('connect', () => {
         `color: white`,
         `font-weight: bold`,
         `padding: 2px 0.5em`,
-    ];
+    ]
     console.log('%cWebSocket', styles.join(';'), 'Connected')
     socket.emit('join', 'homepage')
 })
@@ -53,7 +54,7 @@ socket.on('message', (thread) => {
         `color: white`,
         `font-weight: bold`,
         `padding: 2px 0.5em`,
-    ];
+    ]
     console.log('%cWebSocket', styles.join(';'), 'Recieved message', thread)
     loadThread(thread)
 })
@@ -65,8 +66,16 @@ socket.on('disconnect', () => {
         `color: white`,
         `font-weight: bold`,
         `padding: 2px 0.5em`,
-    ];
-    console.log('%cWebSocket', styles.join(';'), 'Disonnected')
+    ]
+    console.log('%cWebSocket', styles.join(';'), 'Disconnected')
+})
+
+socket.on('delete', (id) => {
+    document.getElementById(id).outerHTML = ''
+})
+
+socket.on('edit', (id, newText) => {
+    document.getElementById(`${id}-title`).innerText = newText.trim()
 })
 
 async function loadThread(thread) {
@@ -79,7 +88,7 @@ async function loadThread(thread) {
                     .then(response => response.json())
                     .then(result => {
                         if (result.username) {
-                            userCache[thread.author] = result.username
+                            userCache[thread.author] = result
                             resolve()
                         }
                     })
@@ -88,7 +97,7 @@ async function loadThread(thread) {
     }
     await cache()
 
-    threadsField.innerHTML = renderThread(thread) + threadsField.innerHTML
+    threadsField.insertBefore(renderThread(thread), threadsField.childNodes[0])
 }
 
 async function loadThreads() {
@@ -97,8 +106,8 @@ async function loadThreads() {
         .then(result => {
             threadsField.innerHTML = ''
             result.threads.forEach(thread => {
-                if(!userCache[thread.author]) userCache[thread.author] = result.usernames[thread.author]
-                threadsField.innerHTML += renderThread(thread)
+                if (!userCache[thread.author]) userCache[thread.author] = result.users[thread.author]
+                threadsField.appendChild(renderThread(thread))
             })
         })
 }
@@ -106,11 +115,187 @@ async function loadThreads() {
 async function loadQuery(query) {
     threadsField.innerHTML = ''
     queries[query].threads.forEach(thread => {
-        if(!userCache[thread.author]) userCache[thread.author] = queries[query].usernames[thread.author]
-        threadsField.innerHTML += renderThread(thread)
+        if (!userCache[thread.author]) userCache[thread.author] = queries[query].users[thread.author]
+        threadsField.appendChild(renderThread(thread))
     })
 }
 
 function renderThread(thread) {
-    return `<a href="/threads/${thread.id}" class="threadLink" id="${thread.id}"><div class="thread"><span class="title" href="/threads/${thread.id}" title="${thread.title}">${thread.title.substring(0, 50)}${thread.title.length > 50 ? '...' : ''}</span> by ${userCache[thread.author]}</div></a>`
+    let wrapperDiv = document.createElement('div')
+    wrapperDiv.classList.add('threadwrapper')
+    wrapperDiv.id = thread.id
+
+    let threadLink = document.createElement('a')
+    threadLink.href = `/threads/${thread.id}`
+    threadLink.classList.add('threadLink')
+    threadLink.id = `${thread.id}-link`
+
+    let threadDiv = document.createElement('div')
+    threadDiv.classList.add('thread')
+
+    let textDiv = document.createElement('div')
+    textDiv.id = `${thread.id}-title`
+    textDiv.classList.add('title')
+    textDiv.title = thread.title
+    textDiv.innerText = thread.title.trim()
+
+    threadDiv.appendChild(textDiv)
+    threadDiv.appendChild(document.createTextNode(`by ${userCache[thread.author].username}`))
+
+    if(userCache[thread.author].permission === 'admin') {
+        threadDiv.appendChild(document.createTextNode(' '))
+        let adminicon = document.createElement('i')
+        adminicon.classList.add('fa')
+        adminicon.classList.add('fa-shield-alt')
+        adminicon.classList.add('admin')
+        adminicon.title = 'Admin'
+        threadDiv.appendChild(adminicon)
+    }
+
+    threadLink.appendChild(threadDiv)
+    wrapperDiv.appendChild(threadLink)
+
+    if ((user.id === thread.author) || (user.permission === 'admin')) {
+        let editbuttons = document.createElement('div')
+        editbuttons.classList.add('two-grid')
+        editbuttons.classList.add('actionbuttons')
+        editbuttons.classList.add('hidden')
+        editbuttons.id = `${thread.id}-editButtons`
+
+        let cancelbutton = document.createElement('button')
+        cancelbutton.innerText = 'Cancel'
+        cancelbutton.onclick = function () {
+            cancelEdit(thread.id)
+        }
+        editbuttons.appendChild(cancelbutton)
+
+        let savebutton = document.createElement('button')
+        savebutton.innerText = 'Save'
+        savebutton.onclick = function () {
+            saveEdit(thread.id)
+        }
+        editbuttons.appendChild(savebutton)
+        wrapperDiv.appendChild(editbuttons)
+
+
+        let actionbuttons = document.createElement('div')
+        actionbuttons.classList.add('two-grid')
+        actionbuttons.classList.add('actions')
+
+        let editbutton = document.createElement('button')
+        editbutton.onclick = function () {
+            editThread(thread.id)
+        }
+        editbutton.title = 'Edit'
+
+        let editicon = document.createElement('i')
+        editicon.classList.add('fa')
+        editicon.classList.add('fa-pencil-alt')
+        editbutton.appendChild(editicon)
+        actionbuttons.appendChild(editbutton)
+
+        let deletebutton = document.createElement('button')
+        deletebutton.onclick = function () {
+            deleteThread(thread.id)
+        }
+        deletebutton.title = 'Delete'
+
+        let deleteicon = document.createElement('i')
+        deleteicon.classList.add('fa')
+        deleteicon.classList.add('fa-trash')
+        deletebutton.appendChild(deleteicon)
+        actionbuttons.appendChild(deletebutton)
+
+        wrapperDiv.appendChild(actionbuttons)
+    }
+
+    return wrapperDiv
+}
+
+function deleteThread(id) {
+    fetch(`/api/threads/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (!result.success) {
+                alert(result.message)
+            }
+        })
+}
+
+function editThread(id) {
+    if (editing) {
+        document.getElementById(`${editing.id}-title`).classList.remove('editing')
+        document.getElementById(`${editing.id}-title`).contentEditable = false
+        document.getElementById(`${editing.id}-editButtons`).classList.add('hidden')
+        document.getElementById(`${id}-editButtons`).classList.remove('actionbuttonsout')
+        document.getElementById(`${id}-link`).onclick = () => {}
+    }
+    
+    document.getElementById(`${id}-link`).onclick = () => {
+        return false
+    }
+    document.getElementById(`${id}-title`).classList.add('editing')
+    document.getElementById(`${id}-title`).contentEditable = true
+    document.getElementById(`${id}-title`).focus()
+    document.getElementById(`${id}-editButtons`).classList.remove('hidden')
+    document.getElementById(`${id}-editButtons`).classList.add('actionbuttonsout')
+    setEndOfContenteditable(document.getElementById(`${id}-title`))
+    editing = {
+        id: id,
+        text: document.getElementById(`${id}-title`).innerText
+    }
+}
+
+function saveEdit(id) {
+    const body = {
+        new: document.getElementById(`${id}-title`).innerText
+    }
+    fetch(`/api/threads/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(body),
+            headers: {
+                'content-type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (!result.success) {
+                alert(result.message)
+            }
+        })
+    document.getElementById(`${id}-title`).classList.remove('editing')
+    document.getElementById(`${id}-link`).onclick = () => {}
+    document.getElementById(`${id}-title`).contentEditable = false
+    document.getElementById(`${id}-editButtons`).classList.add('hidden')
+    document.getElementById(`${id}-editButtons`).classList.remove('actionbuttonsout')
+    editing = false
+}
+
+function cancelEdit(id) {
+    document.getElementById(`${id}-title`).classList.remove('editing')
+    document.getElementById(`${id}-link`).onclick = () => {}
+    document.getElementById(`${id}-title`).contentEditable = false
+    document.getElementById(`${id}-editButtons`).classList.add('hidden')
+    document.getElementById(`${id}-editButtons`).classList.remove('actionbuttonsout')
+    document.getElementById(`${id}-title`).innerText = editing.text
+    editing = false
+}
+
+function setEndOfContenteditable(contentEditableElement) {
+    var range, selection
+    if (document.createRange) {
+        range = document.createRange()
+        range.selectNodeContents(contentEditableElement)
+        range.collapse(false)
+        selection = window.getSelection()
+        selection.removeAllRanges()
+        selection.addRange(range)
+    } else if (document.selection) {
+        range = document.body.createTextRange()
+        range.moveToElementText(contentEditableElement)
+        range.collapse(false)
+        range.select()
+    }
 }

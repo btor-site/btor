@@ -1,19 +1,24 @@
-.comment {
+.commentbox {
     background-color: #f2f2f2;
     box-shadow: 1px 10px 5px -10px rgba(0, 0, 0, 0.9);
     padding: 20px;
     border-radius: 20px;
     padding-bottom: 10px;
     margin: 10px auto;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
+    margin-bottom: 0 !important;
     word-wrap: break-word;
 }
 
+.comment {
+    margin: auto;
+}
+
+.comment_content {
+    width: 100%;
+}
+
 .author {
-    font-size: 23px;
+    font-size: 15px;
 }
 
 .comment-id {
@@ -45,6 +50,9 @@ textarea {
 
 .title {
     text-align: center;
+    word-wrap: break-word;
+    width: 90%;
+    margin: auto;
 }
 
 
@@ -66,4 +74,58 @@ textarea {
     .formContainer {
         width: 70%;
     }
+}
+
+.comment:hover .actions {
+    height: 35px;
+}
+
+.two-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.actionbuttons {
+    margin-top: 10px !important;
+    width: 90%;
+    margin: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.actions {
+    transition: height 0.3s;
+    width: 90%;
+    height: 0;
+    margin: auto;
+    margin-top: 1px;
+    overflow:hidden;
+}
+
+.actions>button {
+    padding: 2px !important;
+    font-size: 15px !important;
+    font-weight: 200 !important;
+    height: 30px !important;
+    margin: 1px;
+}
+
+.editing {
+    background-color: #e5e5e5;
+}
+
+[contenteditable]:focus {
+    outline: 0px solid transparent;
+}
+
+[contenteditable=true] {
+    padding-right: 7px;
+    padding-left: 7px;
+    border-radius: 7px;
+}
+
+.admin {
+    color: #8C52FF;
 }

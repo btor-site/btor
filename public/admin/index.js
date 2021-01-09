@@ -100,8 +100,9 @@ function table() {
                 width: 250
             },
             {
-                title: 'Token',
-                field: 'token'
+                title: 'Permisson',
+                field: 'permission',
+                width: 130
             }
         ]
     })

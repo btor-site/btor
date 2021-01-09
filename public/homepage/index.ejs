@@ -26,24 +26,61 @@
     <div class="topbar">
         <div class="navbar">
             <a href="/"><img src="/assets/logo.png" height="55" class="logo"></a>
-            <a href="/threads/new"><button class="navBtn topBtn"><i class="fa fa-plus-square"></i> New thread</button></a>
-            <a href="/settings"><button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%-username%></button></a>
-            <a href="/logout"><button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button></a>
+            <a href="/threads/new" class="btnlink">
+                <button class="navBtn topBtn"><i class="fa fa-plus-square"></i> New thread</button>
+            </a>
+            <a href="/settings" class="btnlink">
+                <button class="navBtn topBtn"><i class="fa fa-user-cog"></i> <%=user.username%></button>
+            </a>
+            <a href="/logout" class="btnlink">
+                <button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button>
+            </a>
             <input type="search" placeholder="Search for threads" id="searchBar" class="searchBar">
         </div>
         <hr>
     </div>
     <section class="basic-grid bottombar navbar">
-        <a href="/threads/new" class="card"><button class="navBtn bottomBtn"><i class="fa fa-plus-square"></i></button></a>
-        <a href="/settings" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%-username%></button></a>
-        <a href="/logout" class="card"><button class="navBtn bottomBtn"><i class="fa fa-user-times"></i></button></a>
+        <a href="/threads/new" class="card btnlink">
+            <button class="navBtn bottomBtn"><i class="fa fa-plus-square"></i></button>
+        </a>
+        <a href="/settings" class="card btnlink">
+            <button class="navBtn bottomBtn"><i class="fa fa-user-cog"></i> <%=user.username%></button>
+        </a>
+        <a href="/logout" class="card btnlink">
+            <button class="navBtn bottomBtn"><i class="fa fa-user-times"></i></button>
+        </a>
     </section>
     <!-- Navbars -->
 
     <img class="banner" src="/assets/banner.png">
     <div id="threads">
-        <% threads.threads.forEach((thread)=>{%>
-        <a href="/threads/<%=thread.id%>" class="threadLink" id="<%=thread.id%>"><div class="thread"><span class="title" href="/threads/<%=thread.id%>" title="<%-thread.title%>"><%-thread.title.substring(0, 50)%><%=thread.title.length > 50 ? '...' : ''%></span> by <%-threads.usernames[thread.author]%></div></a>
+        <% body.threads.forEach((thread)=>{%>
+        <div class="threadwrapper" id="<%=thread.id%>">
+            <a href="/threads/<%=thread.id%>" class="threadLink" id="<%=thread.id%>-link">
+                <div class="thread">
+                    <div id="<%=thread.id%>-title" class="title" title="<%=thread.title%>">
+                        <%=thread.title.trim()%>
+                    </div>
+                    by
+                    <%=body.users[thread.author]['username']%><%-body.users[thread.author].permission === 'admin' ? ' <i class="fa fa-shield-alt admin" title="Admin"></i>' : ''%>
+                    <br>
+                </div>
+            </a>
+            <% if ((user.id === thread.author) || (user.permission === 'admin')) {%>
+            <div class="two-grid actionbuttons hidden" id="<%=thread.id%>-editButtons">
+                <button onclick="cancelEdit('<%=thread.id%>')">Cancel</button>
+                <button onclick="saveEdit('<%=thread.id%>')">Save</button>
+            </div>
+            <div class="actions two-grid">
+                <button title="Edit" onclick="editThread('<%=thread.id%>')">
+                    <i class="fa fa-pencil-alt"></i>
+                </button>
+                <button title="Delete" onclick="deleteThread('<%=thread.id%>')">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+            <% } %>
+        </div>
         <%})%>
     </div>
     <script src="/socket.io/socket.io.js"></script>
@@ -53,6 +90,10 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
             })
+        }
+        let user = {
+            id: '<%=user.id%>',
+            permission: '<%=user.permission%>'
         }
     </script>
 </body>

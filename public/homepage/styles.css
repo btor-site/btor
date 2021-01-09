@@ -4,25 +4,29 @@
     border-radius: 10px;
     text-decoration: none;
     border: 1px solid #d1d1d1;
+    word-wrap: break-word;
+    z-index: 3;
+    position: relative;
 }
 
 @media (min-width: 750px) {
-    .threadLink {
+    .threadwrapper {
         width: 35%;
     }
 }
 
 @media (max-width: 750px) {
-    .threadLink {
+    .threadwrapper {
         width: 70%;
     }
+
     .banner {
         display: none;
     }
 }
 
 .title {
-    font-size: 23px;
+    font-size: 20px;
     color: #8B52FE;
     text-decoration: none;
 }
@@ -67,8 +71,12 @@
 .threadLink {
     text-decoration: none;
     color: black;
-    margin: 10px auto;
     display: block;
+}
+
+.threadwrapper {
+    margin: 10px auto;
+    z-index: 1;
 }
 
 .thread:hover {
@@ -79,4 +87,88 @@
 
 .threadLink:hover {
     color: black;
+}
+
+.admin {
+    color: #8C52FF;
+}
+
+.threadwrapper:hover .actions {
+    height: 35px;
+}
+
+.two-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.actionbuttons {
+    background-color: #E5E5E5;
+    position: relative;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding-left: 5%;
+    padding-right: 5%;
+    overflow: hidden;
+    z-index: 2;
+    margin: auto;
+    transition: height 0.3s;
+}
+
+.actionbuttons > button {
+    margin-top: 15px;
+}
+
+.hidden {
+    height: 0;
+}
+
+.actionbuttonsout {
+    height: 60px;
+    margin-top: -11px !important;
+    border: 1px solid #d1d1d1;
+}
+
+.actions {
+    transition: height 0.3s;
+    width: 90%;
+    height: 0;
+    margin: auto;
+    margin-top: 1px;
+    overflow: hidden;
+}
+
+.actions>button {
+    padding: 2px !important;
+    font-size: 15px !important;
+    font-weight: 200 !important;
+    height: 30px !important;
+    margin: 1px;
+}
+
+.editing {
+    background-color: #cecece;
+}
+
+[contenteditable]:focus {
+    outline: 0px solid transparent;
+}
+
+[contenteditable=true] {
+    padding-right: 7px;
+    padding-left: 7px;
+    border-radius: 7px;
+}
+
+.linkDisabled {
+    pointer-events: none;
+}
+
+.title br {
+    display:none;
+}
+
+.title * {
+    display:inline;
+    white-space:nowrap;
 }
