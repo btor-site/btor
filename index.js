@@ -11,6 +11,7 @@ const helmet = require('helmet')
 const FlakeId = require('flake-idgen')
 const intformat = require('biguint-format')
 const {nanoid} = require('nanoid')
+const bodyParser = require('body-parser')
 const socketio = require('socket.io')
 
 const saltRounds = 10
@@ -71,7 +72,11 @@ server.listen(process.env.PORT, async () => {
 app.use('/assets', express.static('public/assets'))
 app.use('/', express.static('public/assets/home'))
 app.use('/pwa-icons', express.static('public/assets/pwa-icons'))
-app.use(express.json())
+app.use('/api/users/new', userLimiter)
+app.use('/api/threads/new', threadLimiter)
+app.use('/api/threads/:code/comments/new', commentLimiter)
+app.use('/api/users/signin', signinLimiter)
+app.use(bodyParser.json({limit: '10kb'}))
 app.use(cookieParser())
 app.use(compression())
 app.use(helmet({
@@ -79,10 +84,6 @@ app.use(helmet({
     referrerPolicy: false
 }))
 
-app.use('/api/users/new', userLimiter)
-app.use('/api/threads/new', threadLimiter)
-app.use('/api/threads/:code/comments/new', commentLimiter)
-app.use('/api/users/signin', signinLimiter)
 
 // CSS and JS
 app.get('/scripts/:page/index.js', async (req, res) => {
@@ -119,6 +120,18 @@ var cookieChecker = async function (req, res, next) {
 }
 
 app.use(cookieChecker)
+app.use(async function (err, req, res, next) {
+    console.error(req.originalUrl, '\n', req.headers, '\n', err.stack, '\n')
+    switch (err.type) {
+        case 'entity.too.large':
+            res.status(413).json({message: 'The request you made was too big'})
+            break;
+
+        default:
+            res.status(500).json({message: 'An unexpected error occured, please try again later'})
+            break;
+    }
+})
 // Pages
 
 app.get('/', async (req, res) => {

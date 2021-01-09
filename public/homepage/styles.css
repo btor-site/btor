@@ -29,6 +29,7 @@
     font-size: 20px;
     color: #8B52FE;
     text-decoration: none;
+    overflow: hidden;
 }
 
 .title:hover {
