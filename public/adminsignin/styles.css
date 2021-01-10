@@ -64,6 +64,7 @@ input[type=submit] {
     width: 250px;
     border-radius: 20px !important;
     padding: 0 !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
 input[type=submit]:hover {

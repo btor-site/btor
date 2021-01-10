@@ -47,6 +47,7 @@ input[type=submit] {
     width: 100px;
     border-radius: 20px !important;
     padding: 0 !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
 input[type=submit]:hover {
@@ -82,4 +83,8 @@ table {
 
 input, select {
     margin-top: 3px;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
 }

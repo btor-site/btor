@@ -173,3 +173,7 @@
     display:inline;
     white-space:nowrap;
 }
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}

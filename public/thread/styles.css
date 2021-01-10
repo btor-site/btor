@@ -30,6 +30,7 @@
 input[type=submit] {
     background-color: #8B52FE !important;
     color: white !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
 input[type=submit]:hover {
@@ -129,4 +130,8 @@ textarea {
 
 .admin {
     color: #8C52FF;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
 }

@@ -93,3 +93,7 @@ hr {
 .btnlink {
     text-decoration: none;
 }
+
+a {
+    -webkit-tap-highlight-color: transparent;
+}

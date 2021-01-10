@@ -11,6 +11,7 @@
     border-radius: 0 !important;
     font-size: 13px;
     margin-top: 10px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .navBtn:hover {
@@ -57,6 +58,7 @@ a {
     text-decoration: none;
     font-weight: 650;
     color: #8B52FE !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
 a:hover {
