@@ -13,6 +13,10 @@
     .threadwrapper {
         width: 35%;
     }
+
+    .mobile {
+        display: none !important;
+    }
 }
 
 @media (max-width: 750px) {
@@ -22,6 +26,10 @@
 
     .banner {
         display: none;
+    }
+
+    .computer {
+        display: none !important;
     }
 }
 
@@ -176,4 +184,17 @@
 
 button {
     -webkit-tap-highlight-color: transparent;
+}
+
+.add-button-mobile {
+    position: fixed;
+    bottom: 100px;
+    width: 100px;
+    padding: 0 !important;
+    left: 50%;
+    margin-left: -50px;
+    z-index: 10;
+    background-color: #8b52fe;
+    border-radius: 50px;
+    color: white;
 }

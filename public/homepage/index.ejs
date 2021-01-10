@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="/styles/homepage/styles.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    <link rel="stylesheet" href="/assets/navbar/styles.css">
+    <link rel="stylesheet" href="/assets/styles/navbar.css">
 </head>
 
 <body>
@@ -35,6 +35,7 @@
             <a href="/logout" class="btnlink">
                 <button class="navBtn topBtn"><i class="fa fa-user-times"></i> Sign out</button>
             </a>
+            <button class="add-button navBtn computer"><i class="fa fa-plus-circle"></i> Install</button>
             <input type="search" placeholder="Search for threads" id="searchBar" class="searchBar">
         </div>
         <hr>
@@ -83,8 +84,10 @@
         </div>
         <%})%>
     </div>
+    <button class="add-button add-button-mobile mobile"><i class="fa fa-plus-circle"></i> Install</button>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/scripts/homepage/index.js"></script>
+    <script src="/assets/scripts/pwaInstall.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
