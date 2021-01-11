@@ -77,6 +77,10 @@ socket.on('edit', (id, newText) => {
     linkifyElement(document.getElementById(`${id}-text`))
 })
 
+socket.on('titleEdit', (newText) => {
+    document.getElementById('title').innerText = newText
+})
+
 socket.on('goHome', () => {
     document.location.href = '/'
 })

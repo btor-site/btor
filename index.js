@@ -575,6 +575,7 @@ app.patch('/api/threads/:id', async (req, res) => {
     if ((req.user.permission === 'admin') || (req.user.id === thread.author)) {
         await thread_overviewDB.update({id: req.params.id}, {$set: {title: req.body.new.trim()}})
         io.to('homepage').emit('edit', req.params.id, req.body.new.trim())
+        io.to(req.params.id).emit('titleEdit', req.body.new.trim())
         res.json({
             message: 'Thread edited successfully',
             success: true

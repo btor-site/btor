@@ -76,6 +76,7 @@ socket.on('delete', (id) => {
 
 socket.on('edit', (id, newText) => {
     document.getElementById(`${id}-title`).innerText = newText.trim()
+    document.getElementById(`${id}-title`).title = newText.trim()
 })
 
 async function loadThread(thread) {
