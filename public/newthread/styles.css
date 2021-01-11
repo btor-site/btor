@@ -27,6 +27,7 @@ input[type=text] {
     border-bottom: 1px solid white !important;
     background-color: rgba(100, 100, 100, 0.4) !important;
     border-radius: 5px;
+    caret-color: #8B52FE;
 }
 
 textarea {
@@ -35,6 +36,7 @@ textarea {
     color: white;
     background-color: rgba(100, 100, 100, 0.4) !important;
     border-radius: 5px;
+    caret-color: #8B52FE;
 }
 
 input:focus {

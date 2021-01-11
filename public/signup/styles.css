@@ -44,6 +44,7 @@ input[type=password] {
     color: white;
     border-bottom: 1px solid white !important;
     border-radius: 0 !important;
+    caret-color: #8B52FE;
 }
 
 input[type=text]:focus,

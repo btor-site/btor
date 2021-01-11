@@ -48,6 +48,7 @@ label {
 
 textarea {
     width: 100%;
+    caret-color: #8B52FE;
 }
 
 .title {
@@ -116,6 +117,7 @@ textarea {
 
 .editing {
     background-color: #e5e5e5;
+    caret-color: #8B52FE;
 }
 
 [contenteditable]:focus {

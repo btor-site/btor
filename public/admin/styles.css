@@ -83,6 +83,7 @@ table {
 
 input, select {
     margin-top: 3px;
+    caret-color: #8B52FE;
 }
 
 button {

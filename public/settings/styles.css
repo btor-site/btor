@@ -41,4 +41,5 @@ input[type=submit]:hover {
 
 input {
     margin-bottom: 1.5rem;
+    caret-color: #8B52FE;
 }
