@@ -330,7 +330,8 @@ app.post('/api/users/update/password', async (req, res) => {
     bcrypt.compare(req.body.oldPassword, req.user.password, async function (error, response) {
         if (response) {
             bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
-                await usersDB.update({token: req.cookies.token}, {$set: {password: hash}})
+                let token = `${Buffer.from(req.user.id).toString('base64')}.${nanoid(40)}`
+                await usersDB.update({token: req.cookies.token}, {$set: {password: hash, token: token}})
                 res.json({
                     message: 'Password was updated',
                     success: true
